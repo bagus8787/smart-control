@@ -1,10 +1,12 @@
-package com.example.smart_control.receiver;
+package com.example.smart_control.ui.user.feeder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -15,8 +17,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.smart_control.R;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +32,9 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WifiActivity extends AppCompatActivity {
+import cz.msebera.android.httpclient.util.TextUtils;
+
+public class ScanWifiActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private WifiManager mWifiManager;
@@ -35,7 +42,7 @@ public class WifiActivity extends AppCompatActivity {
     private WifiInfo info;
     private File mFile;
 
-    private static String CONFIG_PATH_RELATIVE = "/pre_resource/config/config.txt";
+    private static String CONFIG_PATH_RELATIVE = "/pre_resource/config_ku/config.txt";
     public static String config_path = "";
     public static String SSID ;
     public static String PSWD ;
@@ -49,12 +56,46 @@ public class WifiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wifi);
+        setContentView(R.layout.activity_scan_wifi);
 
         edt_ssid = findViewById(R.id.edt_ssid);
         edt_pass = findViewById(R.id.edt_pass);
 
         btn_konek = findViewById(R.id.btn_konek);
+
+        mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        conf = new WifiConfiguration();
+        Log.d("mFile", conf.toString());
+
+//        external wifi
+        config_path = Environment.getExternalStorageDirectory().getAbsolutePath() + CONFIG_PATH_RELATIVE;
+        mFile = new File(config_path);
+
+        Log.d("mFile", mFile.toString());
+
+//        GetWifiConnectedState();
+
+        mWifiManager.setWifiEnabled(true);
+
+        WifiManager wifiManager =
+                (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        readtvWifiState(wifiManager);
+
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        Log.d("infowifineee", "= " + wifiInfo.toString());
+
+//        String status = wifiInfo.getSupplicantState().toString();
+
+        if(wifiInfo.getSupplicantState().toString() == "DISCONNECTED"){
+//            Log.d("infowifi", "= " + wifiInfo.getSSID());
+            Log.d("infowifi", "= " + wifiInfo.getSupplicantState());
+
+        }else{
+            Log.d("infowifi", "= " + wifiInfo.getSSID());
+        }
+
+        getCurrentSsid(getApplicationContext());
 
         btn_konek.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,25 +118,35 @@ public class WifiActivity extends AppCompatActivity {
                 PSWD = edt_pass.getText().toString();
 
                 startWifiConnected();
+                Toast.makeText(ScanWifiActivity.this, "Berhasil konek WiFi", Toast.LENGTH_LONG).show();
+
+                startActivity(new Intent(ScanWifiActivity.this, HomeFeederActivity.class));
             }
         });
+    }
 
-        mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        conf = new WifiConfiguration();
-        Log.d("mFile", conf.toString());
-
-//        external wifi
-        config_path = Environment.getExternalStorageDirectory().getAbsolutePath() + CONFIG_PATH_RELATIVE;
-        mFile = new File(config_path);
-
-        Log.d("mFile", mFile.toString());
-
-        GetWifiConnectedState();
-
-        if (mWifiManager != null && !mWifiManager.isWifiEnabled()) {
-            mWifiManager.setWifiEnabled(true);
-
+    // "android.permission.ACCESS_WIFI_STATE" is needed
+    private String readtvWifiState(WifiManager wm){
+        String result = "";
+        switch (wm.getWifiState()){
+            case WifiManager.WIFI_STATE_DISABLED:
+                result = "WIFI_STATE_DISABLED";
+                break;
+            case WifiManager.WIFI_STATE_DISABLING:
+                result = "WIFI_STATE_DISABLING";
+                break;
+            case WifiManager.WIFI_STATE_ENABLED:
+                result = "WIFI_STATE_ENABLED";
+                break;
+            case WifiManager.WIFI_STATE_ENABLING:
+                result = "WIFI_STATE_ENABLING";
+                break;
+            case WifiManager.WIFI_STATE_UNKNOWN:
+                result = "WIFI_STATE_UNKNOWN";
+                break;
+            default:
         }
+        return result;
     }
 
     public void connectedClick(View view) {
@@ -104,38 +155,55 @@ public class WifiActivity extends AppCompatActivity {
         SSID = edt_ssid.getText().toString();
         PSWD = edt_pass.getText().toString();
 
-//        startWifiConnected();
+        startWifiConnected();
     }
 
     public void startWifiConnected() {
-//        Log.i(TAG, "WifiManagerActivity---startWifiConnected");
-
-        Log.d("SSIDDDDD", "= " + SSID);
-
+        Log.i(TAG, "WifiManagerActivity---startWifiConnected");
 //        connectWifi(SSID, PSWD);
-        mWifiManager.setWifiEnabled(true);
 
         if (mWifiManager != null && !mWifiManager.isWifiEnabled()) {
             mWifiManager.setWifiEnabled(true);
 
             connectWifi(SSID, PSWD);
+            Log.d("SSIDDDDD", "= " + SSID);
+
+        } else {
+            connectWifi(SSID, PSWD);
+            Log.d("SSIDDDDD", "= " + SSID);
         }
 
-        if (mFile.exists()) {
-            Dictionary<String, String> mdDictionary = readConfig();
-            if (!mdDictionary.isEmpty()) {
-                SSID = mdDictionary.get(SSID_CONFIG);
-                PSWD = mdDictionary.get(PSWD_CONFIG);
-                Log.i(TAG, "SSID = " + SSID);
-                Log.i(TAG, "PSWD = " + PSWD);
-                connectWifi(SSID, PSWD);
+//        if (mFile.exists()) {
+//            Dictionary<String, String> mdDictionary = readConfig();
+//            if (!mdDictionary.isEmpty()) {
+//                SSID = mdDictionary.get(SSID_CONFIG);
+//                PSWD = mdDictionary.get(PSWD_CONFIG);
+//                Log.i(TAG, "SSID = " + SSID);
+//                Log.i(TAG, "PSWD = " + PSWD);
+//                connectWifi(SSID, PSWD);
+//
+//                Log.d("SSID", SSID.toString());
+//                Log.d("PSWD", PSWD.toString());
+//
+//                // mHanlder.post(task);
+//            }
+//        }
+    }
 
-                Log.d("SSID", SSID.toString());
-                Log.d("PSWD", PSWD.toString());
+    public static String getCurrentSsid(Context context) {
+        String ssid = null;
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+            if (connectionInfo != null && !TextUtils.isBlank(connectionInfo.getSSID())) {
+                ssid = connectionInfo.getSSID();
 
-//                 mHanlder.post(task);
+                Log.d("ssiddddd", "= " + ssid);
             }
         }
+        return ssid;
     }
 
     private Handler mHanlder = new Handler();

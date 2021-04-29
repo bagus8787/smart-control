@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.smart_control.R;
 import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
+import com.example.smart_control.ui.user.feeder.ScanDeviceActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -82,10 +83,8 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 //                finish();
 
                 if(firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(LoginFirebaseActivity.this,HomeFeederActivity.class));
+                    startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
                     finish();
-                } else {
-                    Toast.makeText(getApplicationContext(),"Autentikasi Null", Toast.LENGTH_SHORT).show();
                 }
             }
         };

@@ -62,7 +62,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="5dp"
-                    android:src="@drawable/ic_baseline_settings"
+                    app:srcCompat="@drawable/ic_baseline_settings"
                     app:tint="@android:color/white" />
 
             </RelativeLayout>
@@ -91,7 +91,7 @@
                         android:layout_marginStart="30dp"
                         android:layout_marginLeft="15dp"
                         android:layout_marginTop="30dp"
-                        android:text="Hallo ,Bagus !"
+                        android:text="Hallo ,Pengguna !"
                         android:textColor="@android:color/white"
                         android:textSize="24sp"
                         android:textStyle="bold" />

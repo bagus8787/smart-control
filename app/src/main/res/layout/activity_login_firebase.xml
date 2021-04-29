@@ -35,6 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/img_login" />
 
     <EditText
+        android:visibility="gone"
         android:id="@+id/edt_email"
         android:layout_width="300dp"
         android:layout_height="54dp"
@@ -48,6 +49,7 @@
         tools:targetApi="o" />
 
     <EditText
+        android:visibility="gone"
         android:id="@+id/edt_password"
         android:layout_width="300dp"
         android:layout_height="54dp"
@@ -63,9 +65,11 @@
         android:id="@+id/login_google"
         android:layout_width="300dp"
         android:layout_height="50dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="@+id/edt_password"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="@+id/edt_password"
-        app:layout_constraintTop_toBottomOf="@+id/edt_password" />
+        app:layout_constraintTop_toBottomOf="@+id/lg" />
 
     <Button
         android:visibility="gone"
@@ -84,13 +88,14 @@
 
     <TextView
         android:id="@+id/textView3"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Daftar Akun"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/btn_login"
-        app:layout_constraintTop_toBottomOf="@+id/login_google" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_login" />
 
     <Button
         android:id="@+id/btn_register"

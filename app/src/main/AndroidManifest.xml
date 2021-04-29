@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.smart_control" >
-
-    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
-
-    <uses-feature
-        android:name="android.hardware.touchscreen"
-        android:required="false" />
+    package="com.example.smart_control">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -21,11 +15,18 @@
         android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+
+    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature
@@ -50,10 +51,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute" >
-        <activity android:name=".CobaActivity" >
-        </activity>
-        <!-- <activity android:name=".ui.loginFirebase.LoginFirebaseActivity"/> -->
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
+
+        <activity android:name=".ui.user.feeder.ScanWifiActivity"/>
+        <activity android:name=".ui.user.feeder.ScanDeviceActivity" />
+        <activity
+            android:name=".ui.user.feeder.Potrait"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".ui.user.feeder.SettingActivity" />
+        <activity android:name=".CobaActivity" /> <!-- <activity android:name=".ui.loginFirebase.LoginFirebaseActivity"/> -->
         <activity android:name=".base.scan_broadcast.RegisterServiceActivity" />
         <activity android:name=".base.scan_broadcast.RegistrationActivity" />
         <activity android:name=".base.scan_broadcast.ServiceActivity" />
@@ -73,8 +84,9 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_login" /> <!-- <activity android:name=".base.SplashScreenActivity"> -->
         <!-- <activity android:name=".ui.user.feeder.HomeFeederActivity"> -->
-        <activity android:name=".ui.loginFirebase.LoginFirebaseActivity" >
-            <intent-filter>
+        <activity android:name=".ui.loginFirebase.LoginFirebaseActivity">
+
+        <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -96,7 +108,7 @@
             android:name="io.fabric.ApiKey"
             android:value="bf5b6f4d0797a13305d045d79eb7e1eb7b3c4cc3" />
 
-        <service android:name=".services.MyFirebaseMessagingService" >
+        <service android:name=".services.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

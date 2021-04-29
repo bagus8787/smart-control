@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +66,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     LinearLayout ly_timer, ly_wifi, ly_img22;
     TextView mTextView;
     Button btn_beri_pakan;
+    ImageView img_setting;
     RecyclerView rv_time_alarm;
 
     AdapterListAlarm adapterListAlarm;
@@ -85,6 +87,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
 
         auth = FirebaseAuth.getInstance();
+        Log.d("autaaaaaah", "= " + auth.getTenantId());
 
 //      Auth Listener
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -111,6 +114,10 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
         btn_beri_pakan = findViewById(R.id.btn_beri_pakan);
 
+        //ImageViewButton
+        img_setting = findViewById(R.id.img_setting);
+
+        img_setting.setOnClickListener(this);
         ly_img22.setOnClickListener(this);
         ly_wifi.setOnClickListener(this);
         ly_timer.setOnClickListener(this);
@@ -207,6 +214,10 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
                     }
                 });
+                break;
+
+            case R.id.img_setting:
+                startActivity(new Intent(getApplicationContext(), SettingActivity.class));
                 break;
         }
     }

@@ -183,62 +183,68 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button:
-                if (v.getId() == R.id.button) {
+                StringBuilder result = new StringBuilder();
+                result.append("Alarm disetel hari: ");
 
-                    StringBuilder result = new StringBuilder();
-                    result.append("Alarm disetel hari: ");
-
-                    if (txt_count.getText().toString().isEmpty()){
-                        txt_count.setError("Masukkan total dahulu");
-                        txt_count.requestFocus();
-                        return;
-                    }
-                    if (cb_senin.isChecked()) {
-                        setAlarm(2);
-                        result.append("Senin ,");
-                    }
-
-                    if (cb_selasa.isChecked()) {
-                        result.append("Selasa ,");
-                        setAlarm(3);
-                    }
-
-                    if (cb_rabu.isChecked()) {
-                        result.append("Rabu ,");
-                        setAlarm(4);
-                    }
-
-                    if (cb_kamis.isChecked()) {
-                        result.append("Kamis ,");
-                        setAlarm(5);
-                    }
-
-                    if (cb_jumat.isChecked()) {
-                        result.append("Jumat ,");
-                        setAlarm(6);
-                    }
-
-                    if (cb_sabtu.isChecked()) {
-                        result.append("Sabtu ,");
-                        setAlarm(7);
-                    }
-
-                    if (cb_minggu.isChecked()) {
-                        result.append("Minggu ,");
-                        setAlarm(1);
-                    }
-
-//                    SaveToDb(time);
-                    startAlert(v);
-                } else {
-                    if (alarmManager != null) {
-
-                        alarmManager.cancel(pendingIntent);
-                        Toast.makeText(this, "Alarm Disabled !!",Toast.LENGTH_LONG).show();
-
-                    }
-
+                if (txt_count.getText().toString().isEmpty()){
+                    txt_count.setError("Masukkan total dahulu");
+                    txt_count.requestFocus();
+                    return;
                 }
+                if (cb_senin.isChecked()) {
+                    setAlarm(2);
+                    result.append("Senin ,");
+                }
+
+                if (cb_selasa.isChecked()) {
+                    result.append("Selasa ,");
+                    setAlarm(3);
+                }
+
+                if (cb_rabu.isChecked()) {
+                    result.append("Rabu ,");
+                    setAlarm(4);
+                }
+
+                if (cb_kamis.isChecked()) {
+                    result.append("Kamis ,");
+                    setAlarm(5);
+                }
+
+                if (cb_jumat.isChecked()) {
+                    result.append("Jumat ,");
+                    setAlarm(6);
+                }
+
+                if (cb_sabtu.isChecked()) {
+                    result.append("Sabtu ,");
+                    setAlarm(7);
+                }
+
+                if (cb_minggu.isChecked()) {
+                    result.append("Minggu ,");
+                    setAlarm(1);
+                }
+
+//                    startAlert(v);
+                SaveToDb(time);
+
+                Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+
+                break;
+
+//                if (v.getId() == R.id.button) {
+//
+//                } else {
+//                    if (alarmManager != null) {
+//
+//                        alarmManager.cancel(pendingIntent);
+//                        Toast.makeText(this, "Alarm Disabled !!",Toast.LENGTH_LONG).show();
+//
+//                    }
+//
+//                }
         }
 
     }
