@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.akshaykale.android:android-timeline-view:2.1@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e289e5c9bfafc57d54b1260dda230b7d/jetified-android-timeline-view-2.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e289e5c9bfafc57d54b1260dda230b7d/jetified-android-timeline-view-2.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e289e5c9bfafc57d54b1260dda230b7d/jetified-android-timeline-view-2.1/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.akshaykale.android/android-timeline-view/2.1/93428ff82e37c1dd751e8b3d41ce17164f603d0c/android-timeline-view-2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.akshaykale.android/android-timeline-view/2.1/fbcca3a5d7c10447fc8cda595a48233c57035985/android-timeline-view-2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

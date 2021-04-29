@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.smart_control" >
+
+    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true" />
+
+    <application
+        android:name=".Myapp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute" >
+        <activity android:name=".CobaActivity" >
+        </activity>
+        <!-- <activity android:name=".ui.loginFirebase.LoginFirebaseActivity"/> -->
+        <activity android:name=".base.scan_broadcast.RegisterServiceActivity" />
+        <activity android:name=".base.scan_broadcast.RegistrationActivity" />
+        <activity android:name=".base.scan_broadcast.ServiceActivity" />
+        <activity android:name=".base.scan_broadcast.RegTypeActivity" />
+        <activity android:name=".base.scan_broadcast.ScanBroadcastActivity" />
+        <activity android:name=".receiver.WifiActivity" />
+        <activity android:name=".ui.user.feeder.TimerActivity" />
+        <activity android:name=".ui.user.feeder.HomeFeederActivity" />
+        <activity android:name=".ui.user.activity.NotificationActivity" /> <!-- android:theme="@style/AppTheme" -->
+        <activity android:name=".ui.user.activity.auth.WelcomeActivity" />
+        <activity android:name=".ui.user.activity.DetailDevicesActivity" /> <!-- <activity android:name=".base.TestActivity"/> -->
+        <activity android:name=".ui.user.activity.AddKategoriDeviceActivity" />
+        <activity android:name=".ui.user.activity.auth.LoginActivity" />
+        <activity android:name=".ui.user.activity.HomeActivity" />
+        <activity android:name=".ui.user.activity.auth.RegisterActivity" /> <!-- <activity android:name=".ui.user.activity.auth.LoginActivity" /> -->
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_login" /> <!-- <activity android:name=".base.SplashScreenActivity"> -->
+        <!-- <activity android:name=".ui.user.feeder.HomeFeederActivity"> -->
+        <activity android:name=".ui.loginFirebase.LoginFirebaseActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".receiver.AlarmReceiver" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/notification_channel_id" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_baseline_notifications" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimaryDark" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="bf5b6f4d0797a13305d045d79eb7e1eb7b3c4cc3" />
+
+        <service android:name=".services.MyFirebaseMessagingService" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ly_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.user.fragment.HomeFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_top_bar"
+                android:background="@color/colorPrimaryDark">
+
+                <TextView
+                    android:id="@+id/txt_kat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Home"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/txt_kat"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_toEndOf="@+id/txt_kat"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down"
+                    app:tint="@color/colorWhite" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="25dp"
+                    android:layout_alignTop="@+id/img_add_device"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toStartOf="@+id/img_add_device"
+                    android:src="@drawable/ic_baseline_notifications_none"
+                    app:tint="@android:color/white" />
+
+                <ImageView
+                    android:id="@+id/img_add_device"
+                    android:layout_width="30dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_baseline_add_circle_outline"
+                    app:tint="@android:color/white" />
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:layout_alignParentBottom="true"-->
+<!--                    android:layout_marginBottom="1dp"-->
+<!--                    android:background="@android:color/darker_gray" />-->
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!--            Cuaca-->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="-10dp"
+                    android:layout_marginTop="-20dp"
+                    android:layout_marginRight="-10dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/bg_rounded_two"
+                    android:backgroundTint="@color/colorPrimaryDark">
+
+                    <TextView
+                        android:id="@+id/txt_wcl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="30dp"
+                        android:text="Welcome Home, Bagus"
+                        android:textColor="@android:color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/img_cloudy"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_below="@+id/txt_wcl"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="34dp"
+                        android:src="@drawable/cloudy"
+                        app:tint="@android:color/white" />
+
+                    <!--            Suhu and etc-->
+
+                    <TextView
+                        android:id="@+id/txt_cuaca"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/img_cloudy"
+                        android:layout_alignStart="@+id/img_cloudy"
+                        android:layout_alignEnd="@+id/img_cloudy"
+                        android:layout_marginStart="35dp"
+                        android:layout_marginTop="-50dp"
+                        android:layout_marginEnd="14dp"
+                        android:text="Cloudy"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txt_wcl"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_toEndOf="@+id/img_cloudy"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="100dp"
+                            android:layout_height="50dp"
+                            android:layout_marginRight="10dp">
+
+                            <TextView
+                                android:id="@+id/txt_vsuhu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="6dp"
+                                android:text="Suhu"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txt_int_suhu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/txt_vsuhu"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="6dp"
+                                android:text="26 C"
+                                android:textColor="@android:color/white"
+                                android:textSize="24sp" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="100dp"
+                            android:layout_height="50dp">
+
+                            <TextView
+                                android:id="@+id/txt_vsuhuluar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="6dp"
+                                android:text="Suhu di luar"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txt_int_outdour_suhu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/txt_vsuhuluar"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:text="26 C"
+                                android:textColor="@android:color/white"
+                                android:textSize="24sp" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <!--            Horizontal Slider-->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="20dp">
+
+                            <TextView
+                                android:id="@+id/name_kat_dev"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="All Devices"
+                                android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="1dp"
+                                android:layout_below="@+id/name_kat_dev"
+                                android:layout_alignEnd="@+id/name_kat_dev"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="0dp"
+                                android:layout_marginBottom="0dp"
+                                android:background="#000000" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="20dp">
+
+                            <TextView
+                                android:id="@+id/name_kat_dev1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ruang Tamu"
+                                android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="1dp"
+                                android:layout_below="@+id/name_kat_dev1"
+                                android:layout_alignEnd="@+id/name_kat_dev1"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="0dp"
+                                android:layout_marginBottom="0dp"
+                                android:background="@color/colorBackground" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="20dp">
+
+                            <TextView
+                                android:id="@+id/name_kat_dev2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dapur"
+                                android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="1dp"
+                                android:layout_below="@+id/name_kat_dev2"
+                                android:layout_alignEnd="@+id/name_kat_dev2"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="0dp"
+                                android:layout_marginBottom="0dp"
+                                android:background="@color/colorBackground" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="20dp">
+
+                            <TextView
+                                android:id="@+id/name_kat_dev3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kamar Atas"
+                                android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="1dp"
+                                android:layout_below="@+id/name_kat_dev3"
+                                android:layout_alignEnd="@+id/name_kat_dev3"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="0dp"
+                                android:layout_marginBottom="0dp"
+                                android:background="@color/colorBackground" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="20dp">
+
+                            <TextView
+                                android:id="@+id/name_kat_dev4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kamar Bawah"
+                                android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="1dp"
+                                android:layout_below="@+id/name_kat_dev4"
+                                android:layout_alignEnd="@+id/name_kat_dev4"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="0dp"
+                                android:layout_marginBottom="0dp"
+                                android:background="@color/colorBackground" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+                <com.example.smart_control.base.layout.ExpandableHeightGridView
+                    android:id="@+id/grid_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:scrollbars="vertical"
+                    android:horizontalSpacing="5dp"
+                    android:columnWidth="500dp"
+                    android:numColumns="2"
+                    android:paddingTop="5dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:background="@drawable/bg_rounded"
+                    android:backgroundTint="@color/colorWhite"
+                    android:verticalSpacing="5dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

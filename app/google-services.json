@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "264612315994",
+    "project_id": "smart-control-7415b",
+    "storage_bucket": "smart-control-7415b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264612315994:android:27f5043ed056f3cafde963",
+        "android_client_info": {
+          "package_name": "com.example.smart_control"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264612315994-93mov54h46jsovgc842govjsmucft1te.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_control",
+            "certificate_hash": "8f9c922698afeb0e49b6209010b530ce43d077ea"
+          }
+        },
+        {
+          "client_id": "264612315994-osk8tukba18h5setadf5mrfvvqr5oij0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_control",
+            "certificate_hash": "a0ae6f2d3369d26b48810d23d112a9ad9a928017"
+          }
+        },
+        {
+          "client_id": "264612315994-p8fgbc7fh9e37okrrrsqrcitvligt6uk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIdAAqqc7T15oFQO5AGQQ804uEzkimG18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264612315994-p8fgbc7fh9e37okrrrsqrcitvligt6uk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

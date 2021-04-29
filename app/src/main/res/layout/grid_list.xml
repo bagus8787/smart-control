@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rounded"
+    android:backgroundTint="@color/colorPrimaryDark">
+
+        <ImageView
+            android:id="@+id/img_devices"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:src="@drawable/lampu_on" />
+
+        <Switch
+            android:id="@+id/img_kondisi_devices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="7dp"
+            android:layout_marginEnd="10dp"/>
+
+    <TextView
+        android:id="@+id/txt_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/img_devices"
+        android:layout_alignStart="@+id/img_devices"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="50dp"
+        android:text="Lampu"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txt_kat_dev"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_devices"
+        android:layout_alignStart="@+id/txt_devices"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="10dp"
+        android:text="Ruang Tamu"
+        android:textColor="@android:color/white"
+        android:textSize="10sp" />
+
+    <ImageView
+        android:layout_width="15dp"
+        android:layout_height="20dp"
+        android:layout_alignTop="@+id/txt_kat_dev"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-3dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_baseline_keyboard_arrow_down"
+        app:tint="@android:color/white" />
+</RelativeLayout>
