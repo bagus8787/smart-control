@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.user.feeder.ScanWifiActivity">
+    tools:context=".ui.user.feeder.AddWifiActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
             android:layout_marginEnd="0dp"
             android:layout_toStartOf="@+id/img_edit"
             android:layout_toEndOf="@+id/img_back"
-            android:text="Setting Device"
+            android:text="Setting Device to Connect Wifi"
             android:textColor="@android:color/white"
             android:textAlignment="center"
             android:textSize="16sp"
@@ -62,16 +62,15 @@
         android:padding="20dp">
 
         <ImageView
-            android:layout_marginLeft="-20dp"
-            android:layout_marginTop="-20dp"
+            android:layout_marginTop="0dp"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:src="@drawable/phone_arrow_devices"/>
+            android:src="@drawable/devices_arrow_wifi"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connect Phone to Device"
+            android:text="Connect Device to Wifi"
             android:layout_marginTop="-60dp"
             android:textAlignment="center"/>
 
@@ -83,7 +82,7 @@
             android:textAlignment="center"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="Silahkan masukkan Password"/>
+            android:text="Masukkan Wifi dan Password"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -98,7 +97,6 @@
 
             <EditText
                 android:id="@+id/edt_ssid"
-                android:enabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -121,11 +119,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:hint="12345678"/>
+                android:hint="Masukkan Password"/>
 
         </LinearLayout>
 
         <TextView
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"

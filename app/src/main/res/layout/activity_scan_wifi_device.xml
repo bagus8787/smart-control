@@ -5,8 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     android:orientation="vertical"
-    tools:context=".ui.user.feeder.ScanWifiActivity">
+    tools:context=".ui.user.feeder.ScanWifiDeviceActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -27,6 +28,7 @@
             app:tint="@android:color/white" />
 
         <TextView
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -35,7 +37,7 @@
             android:layout_marginEnd="0dp"
             android:layout_toStartOf="@+id/img_edit"
             android:layout_toEndOf="@+id/img_back"
-            android:text="Setting Device"
+            android:text="Scan WIFI"
             android:textColor="@android:color/white"
             android:textAlignment="center"
             android:textSize="16sp"
@@ -55,40 +57,64 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:textAlignment="center"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:text="Search Devices"/>
+
+    <ImageView
+        android:id="@+id/img_wifi"
+        android:layout_gravity="center"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"/>
+
+    <ImageView
+        android:visibility="gone"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/set_wifi_satu"/>
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="-10dp"
+        android:layout_gravity="center"
+        android:src="@drawable/phone"/>
+
+    <TextView
+        android:id="@+id/txt_countdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:text="00:00"/>
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
 
-        <ImageView
-            android:layout_marginLeft="-20dp"
-            android:layout_marginTop="-20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:src="@drawable/phone_arrow_devices"/>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connect Phone to Device"
-            android:layout_marginTop="-60dp"
-            android:textAlignment="center"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
             android:layout_marginBottom="10dp"
             android:textAlignment="center"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="Silahkan masukkan Password"/>
+            android:text="Silahkan Masukkan SSID dan Passwordnya"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -98,12 +124,10 @@
 
             <EditText
                 android:id="@+id/edt_ssid"
-                android:enabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:hint="Masukkan Nama Wifi/SSID"/>
-
         </LinearLayout>
 
         <LinearLayout
@@ -121,16 +145,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:hint="12345678"/>
-
+                android:hint="Masukkan Password Wifi/SSID"/>
         </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:text="* Password default = 12345678 .\n* Anda bisa men setting password sesuai keinginan ."
-            />
 
         <Button
             android:id="@+id/btn_konek"

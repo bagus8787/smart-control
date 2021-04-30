@@ -8,8 +8,6 @@ public class SharedPrefManager {
 
     public static final String SP_ID = "spID";
     public static final String SP_NIK = "spNIK";
-    public static final String SP_NAMA = "spNama";
-    public static final String SP_EMAIL = "spEmail";
     public static final String SP_MOBILE = "spMobile";
     public static final String SP_ADDRESS = "spAddress";
     public static final String SP_LOGIN_WEB = "spLoginWeb";
@@ -31,6 +29,19 @@ public class SharedPrefManager {
     public static final String SP_HAS_MASYARAKAT = "spHasMasyarakat";
 
     public static final String SP_ID_LETER = "spIdLeter";
+
+//    IOT references
+    public static final String SP_NAMA = "spNama";
+    public static final String SP_EMAIL = "spEmail";
+    public static final String SP_ID_DEVICE = "spIdDevice";
+    public static final String SP_DEVICE_SSID = "spDeviceSSID";
+    public static final String SP_DEVICE_PASS = "spDevicePass";
+
+    public static final String SP_SSID = "spSSID";
+    public static final String SP_PASS = "spPass";
+
+    public static final String SP_SECRET_KEY = "spSecretKey";
+
 
     SharedPreferences sp;
     SharedPreferences.Editor spEditor;
@@ -111,22 +122,6 @@ public class SharedPrefManager {
         return sp.getBoolean(SP_SUDAH_LOGIN, false);
     }
 
-//    public String getSpRole(){
-//        return sp.getString(SP_ROLE, Role.ROLE_MASYARAKAT);
-//    }
-//
-//    public void setCurrentUserId(Integer id) {
-//        saveSPInt(SP_CUR_USER_ID, id);
-//    }
-//
-//    public boolean isKepalaDesa() {
-//        return getSpRole().equals(Role.ROLE_KEPALA_DESA);
-//    }
-//
-//    public boolean isMasyarakat() {
-//        return getSpRole().equals(Role.ROLE_MASYARAKAT);
-//    }
-
     public boolean hasMasyarakat() {
         return sp.getBoolean(SP_HAS_MASYARAKAT, false);
     }
@@ -135,8 +130,37 @@ public class SharedPrefManager {
         return sp.getString(SP_ID_LETER, "");
     }
 
+    public String getSpIdDevice() {
+        return sp.getString(SP_ID_DEVICE, "");
+    }
+
+    public String getSpDeviceSsid() {
+        return sp.getString(SP_DEVICE_SSID, "");
+    }
+
+    public String getSpDevicePass() {
+        return sp.getString(SP_DEVICE_PASS, "");
+    }
+
+    public String getSpSsid() {
+        return sp.getString(SP_SSID, "");
+    }
+
+    public String getSpPass() {
+        return sp.getString(SP_PASS, "");
+    }
+
+    public String getSpSecretKey() {
+        return sp.getString(SP_SECRET_KEY, "");
+    }
+
     public void setSpNama(String SpNama) {
         if (!SpNama.equals(""))
             saveSPString(SharedPrefManager.SP_NAMA, SpNama);
+    }
+
+    public void setSpDeviceSsid(String SpDeviceSSID) {
+        if (!SpDeviceSSID.equals(""))
+            saveSPString(SharedPrefManager.SP_DEVICE_SSID, SP_DEVICE_SSID);
     }
 }

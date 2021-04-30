@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.smart_control.R;
 import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
 import com.example.smart_control.ui.user.feeder.ScanDeviceActivity;
+import com.example.smart_control.utils.SharedPrefManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -46,10 +47,15 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
     private final String TAG = "SignInAcivity";  //Untuk Log Debugging
     FirebaseAnalytics firebaseAnalytics;
 
+    SharedPrefManager sharedPrefManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_firebase);
+
+        sharedPrefManager = new SharedPrefManager(this);
+
         googleButton = findViewById(R.id.login_google);
         FirebaseConnect();
         googleButton.setOnClickListener(new View.OnClickListener() {
@@ -75,15 +81,25 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
                  * Jika User sebelumnya telah masuk/login dan belum keluar/logout, secara otomatis
                  * Saat aplikasi dibuka kembali, Activity ini akan langsung dialihkan pada Activiy MainMenu
                  */
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//
-//                Log.d("loggggg", "= " + user.getUid());
 
-//                startActivity(new Intent(LoginFirebaseActivity.this,HomeFeederActivity.class));
-//                finish();
+                Log.d("email", "= " + firebaseAuth.getCurrentUser());
+
 
                 if(firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
+
+                    if (sharedPrefManager.getSpDeviceSsid() == ""){
+                        startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
+                        finish();
+                    } else {
+                        Log.d("emailsss", "= " + firebaseAuth.getCurrentUser().getDisplayName());
+
+                        sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, firebaseAuth.getCurrentUser().getEmail());
+                        sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, firebaseAuth.getCurrentUser().getDisplayName());
+//                        firebaseAuth.getCurrentUser().getEmail();
+                        startActivity(new Intent(LoginFirebaseActivity.this, HomeFeederActivity.class));
+//                        finish();
+                    }
+
                     finish();
                 }
             }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/set_wifi_satu"
+        android:duration="400"/>
+
+    <item
+        android:drawable="@drawable/set_wifi_dua"
+        android:duration="400"/>
+
+    <item
+        android:drawable="@drawable/set_wifi_tiga"
+        android:duration="400"/>
+
+    <item
+        android:drawable="@drawable/set_wifi_empat"
+        android:duration="400"/>
+
+    <item
+        android:drawable="@drawable/set_wifi_lima"
+        android:duration="400"/>
+
+</animation-list>

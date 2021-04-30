@@ -29,6 +29,7 @@ import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.WifiActivity;
 import com.example.smart_control.repository.AlarmRepository;
 import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
+import com.example.smart_control.utils.SharedPrefManager;
 import com.example.smart_control.viewmodel.AlarmViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -64,7 +65,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
 //    private static String AUTH_KEY;
     LinearLayout ly_timer, ly_wifi, ly_img22;
-    TextView mTextView;
+    TextView mTextView, txt_nama;
     Button btn_beri_pakan;
     ImageView img_setting;
     RecyclerView rv_time_alarm;
@@ -74,6 +75,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     AlarmViewModel alarmViewModel;
 
     ApiInterface apiInterface;
+    SharedPrefManager sharedPrefManager;
 
     private String token;
     Context context;
@@ -85,6 +87,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
         context = getContext();
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
+        sharedPrefManager = new SharedPrefManager(this);
 
         auth = FirebaseAuth.getInstance();
         Log.d("autaaaaaah", "= " + auth.getTenantId());
@@ -104,7 +107,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         adapterListAlarm = new AdapterListAlarm(getApplicationContext());
         alarmViewModel = new AlarmViewModel(getApplication());
 
-        mTextView = findViewById(R.id.txt);
+        mTextView   = findViewById(R.id.txt);
+        txt_nama    = findViewById(R.id.txt_nama);
 
         ly_timer    = findViewById(R.id.ly_timer);
         ly_wifi     = findViewById(R.id.ly_wifi);
@@ -123,6 +127,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         ly_timer.setOnClickListener(this);
 
         btn_beri_pakan.setOnClickListener(this);
+
+        txt_nama.setText("Haloo ," + sharedPrefManager.getSpNama());
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {

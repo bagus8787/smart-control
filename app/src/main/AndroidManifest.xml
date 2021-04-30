@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.smart_control">
 
+    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,12 +24,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
-    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
-
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature
         android:name="android.hardware.camera.any"
@@ -45,18 +44,20 @@
     <application
         android:name=".Myapp"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:hardwareAccelerated="true"
-        android:largeHeap="true"
-        android:requestLegacyExternalStorage="true"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
-
-        <activity android:name=".ui.user.feeder.ScanWifiActivity"/>
+        <activity android:name=".ui.user.feeder.AddWifiActivity"></activity>
+        <activity android:name=".ui.user.feeder.ScanWifiConnectActivity" />
+        <activity android:name=".ui.user.feeder.ScanWifiDeviceActivity" />
+        <activity android:name=".ui.user.feeder.ScanWifiActivity" />
         <activity android:name=".ui.user.feeder.ScanDeviceActivity" />
         <activity
             android:name=".ui.user.feeder.Potrait"
@@ -85,8 +86,7 @@
             android:label="@string/title_activity_login" /> <!-- <activity android:name=".base.SplashScreenActivity"> -->
         <!-- <activity android:name=".ui.user.feeder.HomeFeederActivity"> -->
         <activity android:name=".ui.loginFirebase.LoginFirebaseActivity">
-
-        <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -52,16 +52,30 @@ public class ScanWifiActivity extends AppCompatActivity {
 
     EditText edt_ssid, edt_pass;
     Button btn_konek;
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_wifi);
 
+        name = getIntent().getStringExtra("name");
+
         edt_ssid = findViewById(R.id.edt_ssid);
         edt_pass = findViewById(R.id.edt_pass);
 
         btn_konek = findViewById(R.id.btn_konek);
+
+//        edt_ssid.setText(name);
+//        if (edt_pass.getText().toString().isEmpty()){
+//            edt_pass.setText("12345678");
+//        } else {
+//            Log.d("passworddd", "= " + edt_pass.getText().toString());
+////            edt_pass.getText().toString();
+//        }
+
+        edt_ssid.setText("FEEDR-USW1000001");
+        edt_pass.setText("1234876569");
 
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         conf = new WifiConfiguration();
@@ -120,7 +134,7 @@ public class ScanWifiActivity extends AppCompatActivity {
                 startWifiConnected();
                 Toast.makeText(ScanWifiActivity.this, "Berhasil konek WiFi", Toast.LENGTH_LONG).show();
 
-                startActivity(new Intent(ScanWifiActivity.this, HomeFeederActivity.class));
+                startActivity(new Intent(ScanWifiActivity.this, AddWifiActivity.class));
             }
         });
     }
