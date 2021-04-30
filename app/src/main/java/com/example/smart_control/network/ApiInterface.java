@@ -92,4 +92,6 @@ public interface ApiInterface {
     Call<StatusPakan> statusPakan(
             @Field("status") String status,
             @Field("jarak") Integer jarak);
+
+
 }

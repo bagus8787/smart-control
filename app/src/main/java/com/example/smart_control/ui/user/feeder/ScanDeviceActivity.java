@@ -14,6 +14,8 @@ import com.example.smart_control.utils.SharedPrefManager;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.UUID;
+
 public class ScanDeviceActivity extends AppCompatActivity {
 
     IntentIntegrator intentIntegrator;
@@ -50,14 +52,18 @@ public class ScanDeviceActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ScanWifiActivity.class));
             }else{
                 String hasil = result.getContents();
+                String secret_key = hasil + "-" + UUID.randomUUID().toString();
+
+                Log.d("secret_key", secret_key);
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, String.valueOf(hasil));
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, secret_key);
 
                 Toast.makeText(this, hasil, Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, ScanWifiActivity.class)
                 .putExtra("name", hasil));
 
-                Log.d("SHAREDSSID", "=" + sharedPrefManager.getSpDeviceSsid());
+//                Log.d("SHAREDSSID", "=" + sharedPrefManager.getSpDeviceSsid());
             }
         }else{
             super.onActivityResult(requestCode, resultCode, data);
