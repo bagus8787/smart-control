@@ -20,6 +20,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.smart_control.R;
+import com.example.smart_control.network.ApiInterface;
+import com.example.smart_control.network.ApiLocalClient;
+import com.example.smart_control.utils.SharedPrefManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +36,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.util.TextUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ScanWifiActivity extends AppCompatActivity {
 
@@ -50,6 +56,9 @@ public class ScanWifiActivity extends AppCompatActivity {
     public static String PSWD_CONFIG = "pswd";
     private static int DELATE_TIME = 5000;
 
+    SharedPrefManager sharedPrefManager;
+    ApiInterface apiInterface;
+
     EditText edt_ssid, edt_pass;
     Button btn_konek;
     String name;
@@ -58,6 +67,9 @@ public class ScanWifiActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_wifi);
+
+        sharedPrefManager = new SharedPrefManager(this);
+        apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
 
         name = getIntent().getStringExtra("name");
 
@@ -75,7 +87,6 @@ public class ScanWifiActivity extends AppCompatActivity {
 //        }
 
         edt_ssid.setText("FEEDR-USW1000001");
-        edt_pass.setText("1234876569");
 
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         conf = new WifiConfiguration();
@@ -123,16 +134,19 @@ public class ScanWifiActivity extends AppCompatActivity {
                 }
 
                 if (edt_pass.getText().toString().isEmpty()){
-                    edt_pass.setError("Password harus diisi");
-                    edt_pass.requestFocus();
-                    return;
+                    edt_pass.setText("12348765");
+                    finish();
                 }
 
                 SSID = edt_ssid.getText().toString();
                 PSWD = edt_pass.getText().toString();
 
                 startWifiConnected();
-                Toast.makeText(ScanWifiActivity.this, "Berhasil konek WiFi", Toast.LENGTH_LONG).show();
+
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, SSID);
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, PSWD);
+
+                Toast.makeText(ScanWifiActivity.this, "Berhasil konek Device", Toast.LENGTH_LONG).show();
 
                 startActivity(new Intent(ScanWifiActivity.this, AddWifiActivity.class));
             }

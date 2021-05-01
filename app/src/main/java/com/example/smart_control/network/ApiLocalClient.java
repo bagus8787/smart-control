@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiLocalClient {
 //    private static final String url = "http://192.168.1.16/api/v1/";
 
-    private static final String url = "http://192.168.1.15/";
+    private static final String url = "http://192.168.4.1/";
 
     private static ApiInterface REST_CLIENT;
 

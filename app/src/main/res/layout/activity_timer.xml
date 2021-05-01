@@ -55,12 +55,14 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/ly_atas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <EditText
+            android:visibility="gone"
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,7 +79,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="46dp"
-            android:layout_marginLeft="46dp"
             android:layout_marginTop="5dp"
             android:text="Please Enter Time To Set an Alarm"
             android:textSize="20sp" />
@@ -96,13 +97,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:timePickerMode="spinner"/>
-
-        <EditText
-            android:id="@+id/txt_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:hint="Total Count"/>
 
         <CheckBox
             android:id="@+id/cb_ulangi"
@@ -160,18 +154,25 @@
                 android:layout_height="wrap_content"
                 android:text="Minggu" />
 
+            <EditText
+                android:id="@+id/txt_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Total Count"/>
         </LinearLayout>
 
         <Button
             android:id="@+id/button"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_rounded"
             android:backgroundTint="@color/colorPrimary"
             android:textColor="@color/colorWhite"
-            android:text="set alarm" />
+            android:textAllCaps="false"
+            android:text="Set alarm" />
 
         <Button
             android:id="@+id/button2"

@@ -19,6 +19,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiInterface {
     @Headers({"Accept: application/json"})
@@ -79,19 +80,53 @@ public interface ApiInterface {
 
 
 //    Local
+    //Register
+    @FormUrlEncoded
+    @POST("register")
+    Call<String> register(
+            @Field("device_id") String device_id,
+            @Field("secret_key") String secret_key);
+
+    //Device Config
+    @FormUrlEncoded
+    @POST("config")
+    Call<String> config(
+            @Field("ssid") String ssid,
+            @Field("pass") String pass,
+            @Field("ap_pass") String ap_pass,
+            @Field("secret_key") String secret_key);
+
+    //Timer add
     @FormUrlEncoded
     @POST("timer/add")
     Call<String> addAlarm(
             @Field("time") String time,
-            @Field("count") Integer count);
+            @Field("count") Integer count,
+            @Field("secret_key") String secret_key);
+
+    //Timer Edit
+    @FormUrlEncoded
+    @POST("timer/edit")
+    Call<String> editAlarm(
+            @Field("time") String time,
+            @Field("count") Integer count,
+            @Field("old_time") String old_time,
+            @Field("secret_key") String secret_key);
+
+    //Timer Delete
+    @FormUrlEncoded
+    @POST("timer/edit")
+    Call<String> deleteAlarm(
+            @Field("time") String time,
+            @Field("secret_key") String secret_key);
 
     @GET("beri_pakan")
-    Call<String> beriPakan();
+    Call<String> beriPakan(
+            @Query("count") String count
+    );
 
     @GET("status_pakan")
-    Call<StatusPakan> statusPakan(
-            @Field("status") String status,
-            @Field("jarak") Integer jarak);
+    Call<StatusPakan> statusPakan();
 
 
 }

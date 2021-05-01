@@ -54,7 +54,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
-        <activity android:name=".ui.user.feeder.AddWifiActivity"></activity>
+        <activity android:name=".ui.user.feeder.PanduanActivity"></activity>
+        <activity android:name=".ui.user.feeder.NotificationFeederActivity" />
+        <activity android:name=".ui.user.feeder.AddWifiActivity" />
         <activity android:name=".ui.user.feeder.ScanWifiConnectActivity" />
         <activity android:name=".ui.user.feeder.ScanWifiDeviceActivity" />
         <activity android:name=".ui.user.feeder.ScanWifiActivity" />

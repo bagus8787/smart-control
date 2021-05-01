@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.user.feeder.HomeFeederActivity">
@@ -45,6 +46,7 @@
                     app:tint="@color/colorWhite" />
 
                 <ImageView
+                    android:id="@+id/img_notif"
                     android:layout_width="30dp"
                     android:layout_height="25dp"
                     android:layout_alignTop="@+id/img_setting"
@@ -165,21 +167,96 @@
                     android:textColor="@color/colorPrimaryDark"
                     android:text="Pemberian pakan selanjutnya pukul 12.00 WIB 5 Jam dari sekarang"/>
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:src="@drawable/empty_eat"/>
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/btn_beri_pakan"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="50dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/empty_eat"/>
+
+                        <Button
+                            android:id="@+id/btn_beri_pakan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_rounded"
+                            android:backgroundTint="@color/colorPrimaryDark"
+                            android:textColor="@color/colorWhite"
+                            android:text="Beri Pakan"
+                            android:textAllCaps="false"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="120dp">
+
+                            <ProgressBar
+                                android:id="@+id/progressBar"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="86dp"
+                                android:layout_height="85dp"
+                                android:layout_marginTop="10dp"
+                                android:indeterminate="false"
+                                android:max="100"
+                                android:progress="0"
+                                android:progressDrawable="@drawable/custom_progressbar_drawable"
+                                android:secondaryProgress="0" />
+
+                            <TextView
+                                android:id="@+id/txtProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignStart="@+id/progressBar"
+                                android:layout_alignTop="@+id/progressBar"
+                                android:layout_alignEnd="@+id/progressBar"
+                                android:layout_marginTop="31dp"
+                                android:textAlignment="center"
+                                android:text="100%"
+                                android:textAppearance="?android:attr/textAppearanceSmall" />
+                        </RelativeLayout>
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_rounded"
+                            android:backgroundTint="@color/colorPrimaryDark"
+                            android:textColor="@color/colorWhite"
+                            android:textAllCaps="false"
+                            android:clickable="false"
+                            android:text="Status Pakan"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:visibility="gone"
+                    android:id="@+id/progressBar1"
+                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/bg_rounded"
-                    android:backgroundTint="@color/colorPrimaryDark"
-                    android:textColor="@color/colorWhite"
-                    android:text="Beri Pakan"
-                    android:textAllCaps="false"/>
+                    android:layout_height="match_parent"
+                    android:minWidth="220dp"
+                    android:minHeight="60dp"
+                    android:rotation="270" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -438,5 +515,4 @@
 
     </ScrollView>
 
-
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>

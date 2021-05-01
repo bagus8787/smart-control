@@ -1,6 +1,7 @@
 package com.example.smart_control.ui.user.feeder;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -8,15 +9,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,11 +33,13 @@ import com.example.smart_control.R;
 import com.example.smart_control.adapter.AdapterListAlarm;
 import com.example.smart_control.base.scan_broadcast.ScanBroadcastActivity;
 import com.example.smart_control.model.AlarmModel;
+import com.example.smart_control.model.StatusPakan;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.WifiActivity;
 import com.example.smart_control.repository.AlarmRepository;
 import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
+import com.example.smart_control.ui.user.activity.NotificationActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 import com.example.smart_control.viewmodel.AlarmViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -67,7 +78,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     LinearLayout ly_timer, ly_wifi, ly_img22;
     TextView mTextView, txt_nama;
     Button btn_beri_pakan;
-    ImageView img_setting;
+    ImageView img_setting, img_notif;
     RecyclerView rv_time_alarm;
 
     AdapterListAlarm adapterListAlarm;
@@ -78,7 +89,16 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     SharedPrefManager sharedPrefManager;
 
     private String token;
+    String m_Text;
     Context context;
+
+    private TextView txtProgress;
+    private ProgressBar progressBar;
+
+    private int pStatus = 0;
+    private int pDefault = 0;
+
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,25 +123,71 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             }
         };
 
+        txtProgress = (TextView) findViewById(R.id.txtProgress);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        Call<StatusPakan> status_pakan = apiInterface.statusPakan();
+        status_pakan.enqueue(new Callback<StatusPakan>() {
+            @Override
+            public void onResponse(Call<StatusPakan> call, Response<StatusPakan> response) {
+                String status = response.body().getStatus();
+                Log.d("statusss", "=" + response.body().getStatus().toString());
+
+                if (status.equals("HIGH")){
+                    pDefault = 100;
+                } else if (status == "MEDIUM"){
+                    pDefault = 75;
+                } else if (status == "LOW"){
+                    pDefault = 35;
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (pStatus <= pDefault) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setProgress(pStatus);
+                                    txtProgress.setText(pStatus + " %");
+                                }
+                            });
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            pStatus++;
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onFailure(Call<StatusPakan> call, Throwable t) {
+
+            }
+        });
+
         alarmRepository = new AlarmRepository();
         adapterListAlarm = new AdapterListAlarm(getApplicationContext());
         alarmViewModel = new AlarmViewModel(getApplication());
 
         mTextView   = findViewById(R.id.txt);
         txt_nama    = findViewById(R.id.txt_nama);
-
         ly_timer    = findViewById(R.id.ly_timer);
         ly_wifi     = findViewById(R.id.ly_wifi);
         ly_img22    = findViewById(R.id.ly_img22);
-
         rv_time_alarm = findViewById(R.id.rv_time_alarm);
-
         btn_beri_pakan = findViewById(R.id.btn_beri_pakan);
 
         //ImageViewButton
+        img_notif   = findViewById(R.id.img_notif);
         img_setting = findViewById(R.id.img_setting);
 
         img_setting.setOnClickListener(this);
+        img_notif.setOnClickListener(this);
+
         ly_img22.setOnClickListener(this);
         ly_wifi.setOnClickListener(this);
         ly_timer.setOnClickListener(this);
@@ -208,22 +274,58 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.btn_beri_pakan:
-                Call<String> beriPakan = apiInterface.beriPakan();
-                Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
-                beriPakan.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                    }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
+                builder.setTitle("Jumlah");
+                // I'm using fragment here so I'm using getView() to provide ViewGroup
+                // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+                View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
+                // Set up the input
+                final EditText input = (EditText) viewInflated.findViewById(R.id.input);
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                builder.setView(viewInflated);
 
+// Set up the buttons
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        m_Text = input.getText().toString();
+
+                        Call<String> beriPakan = apiInterface.beriPakan(
+                                m_Text
+                        );
+
+                        Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
+                        beriPakan.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
                     }
                 });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+
                 break;
 
             case R.id.img_setting:
-                startActivity(new Intent(getApplicationContext(), SettingActivity.class));
+                startActivity(new Intent(this, SettingActivity.class));
+                break;
+
+            case R.id.img_notif:
+                startActivity(new Intent(this, NotificationFeederActivity.class));
                 break;
         }
     }

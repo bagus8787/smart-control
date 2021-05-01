@@ -24,6 +24,7 @@ import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.AlarmReceiver;
 import com.example.smart_control.repository.AlarmRepository;
+import com.example.smart_control.utils.SharedPrefManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -50,6 +51,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     private DatabaseHandler db;
 
     ApiInterface apiInterface;
+    SharedPrefManager sharedPrefManager;
+
     AlarmRepository alarmRepository;
 
     @Override
@@ -58,6 +61,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_timer);
 
         alarmRepository = new AlarmRepository();
+
+        sharedPrefManager = new SharedPrefManager(this);
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
 
         AlarmModel db_model = new AlarmModel();
@@ -330,7 +335,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         Call<String> addAlarm = apiInterface.addAlarm(
                 timee,
-                Integer.parseInt(txt_count.getText().toString()));
+                Integer.parseInt(txt_count.getText().toString()),
+                sharedPrefManager.getSpSecretKey());
         addAlarm.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {

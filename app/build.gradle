@@ -138,6 +138,8 @@ dependencies {
     implementation "com.github.andriydruk:rx2dnssd:0.9.14"
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
 
+    //Circular Bar
+    implementation "com.mikhaellopez:circularprogressbar:1.0.0"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
