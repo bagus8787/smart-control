@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,11 +19,23 @@ public class DetailDevicesActivity extends AppCompatActivity {
     View mColorView;
 
     Bitmap bitmap;
+    String id, time, count;
+    EditText ip_time, ip_count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_devices);
+
+        id  = getIntent().getStringExtra("IT_ID");
+        time  = getIntent().getStringExtra("IT_TIME");
+        count  = getIntent().getStringExtra("IT_COUNT");
+
+        ip_time = findViewById(R.id.ip_time);
+        ip_count = findViewById(R.id.ip_count);
+
+        ip_time.setText(time);
+        ip_count.setText(count);
 
         mImageView = findViewById(R.id.imageView);
         mResultView = findViewById(R.id.result);

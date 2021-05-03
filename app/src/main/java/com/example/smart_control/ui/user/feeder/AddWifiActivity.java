@@ -3,8 +3,12 @@ package com.example.smart_control.ui.user.feeder;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.PopUpToBuilder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +18,9 @@ import com.example.smart_control.R;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.utils.SharedPrefManager;
+
+import java.io.DataOutputStream;
+import java.lang.reflect.Method;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,13 +34,19 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
     SharedPrefManager sharedPrefManager;
     ApiInterface apiInterface;
 
+    WifiManager mWifiManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_wifi);
 
+        setMobileDataState(false);
+
         sharedPrefManager = new SharedPrefManager(this);
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
+
+        mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         btn_konek   = findViewById(R.id.btn_konek);
 
@@ -92,6 +105,10 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 });
 
+                mWifiManager.setWifiEnabled(false);
+
+                setMobileDataState(true);
+
                 startActivity(new Intent(AddWifiActivity.this, HomeFeederActivity.class));
                 break;
         }
@@ -100,5 +117,18 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    public void setMobileDataState(boolean mobileDataEnabled)
+    {
+        try{
+            ConnectivityManager dataManager;
+            dataManager  = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            Method dataMtd = ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
+            dataMtd.setAccessible(true);
+            dataMtd.invoke(dataManager, mobileDataEnabled);
+        }catch(Exception ex){
+            //Error Code Write Here
+        }
     }
 }

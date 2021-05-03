@@ -340,8 +340,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         addAlarm.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-
-                Log.d("respon_Add" , "=" + response.body().toString());
+//                Log.d("respon_Add" , "=" + response.body().toString());
             }
 
             @Override

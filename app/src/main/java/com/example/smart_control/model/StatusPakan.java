@@ -7,11 +7,14 @@ public class StatusPakan {
     @Expose
     @SerializedName("status") String status;
     @Expose
-    @SerializedName("jarak") int jarak;
+    @SerializedName("level") String level;
+    @Expose
+    @SerializedName("persen") Integer persen;
 
-    public StatusPakan(String status, int jarak) {
+    public StatusPakan(String status, String level, Integer persen) {
         this.status = status;
-        this.jarak = jarak;
+        this.level = level;
+        this.persen = persen;
     }
 
     public String getStatus() {
@@ -22,11 +25,19 @@ public class StatusPakan {
         this.status = status;
     }
 
-    public int getJarak() {
-        return jarak;
+    public String getLevel() {
+        return level;
     }
 
-    public void setJarak(int jarak) {
-        this.jarak = jarak;
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Integer getPersen() {
+        return persen;
+    }
+
+    public void setPersen(Integer persen) {
+        this.persen = persen;
     }
 }

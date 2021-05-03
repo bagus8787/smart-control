@@ -59,12 +59,10 @@ public class ScanDeviceActivity extends AppCompatActivity {
                 Toast.makeText(this, "Hasil tidak ditemukan", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, ScanWifiActivity.class));
             }else{
-//                String device_id = result.getContents();
-
-                String device_id = "USW1000001";
+                String device_id = result.getContents();
+//                String device_id = "USW1000001";
 
                 String secret_key = device_id + "-" + UUID.randomUUID().toString();
-
 //                Log.d("secret_key", secret_key);
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, String.valueOf(device_id));

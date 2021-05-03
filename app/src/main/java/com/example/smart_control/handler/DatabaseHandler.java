@@ -87,7 +87,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public AlarmModel getContact (int id){
+    public AlarmModel getAlarm (int id){
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TALL, new String[]{
@@ -198,13 +198,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //Delete Data
-    public void deleteModel(AlarmModel alarmModel){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_TALL, KEY_ID + " = ? ",
-                new String[]{
-                        String.valueOf(alarmModel.getId())
-                });
+    public void deleteModel(){
 
-        db.close();
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TABLE_TALL);
+//        db.delete(TABLE_TALL, KEY_ID + " = ? ",
+//                new String[]{
+//                        String.valueOf(alarmModel.getId())
+//                });
+//
+//        db.close();
     }
 }

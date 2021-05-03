@@ -78,9 +78,9 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
                 public void onClick(View view) {
                     context.startActivity(new Intent(context, DetailDevicesActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                            .putExtra("IT_ID", id)
-//                            .putExtra("IT_JUDUL", judul)
-//                            .putExtra("IT_ISI", isi)
+                            .putExtra("IT_ID", id)
+                            .putExtra("IT_TIME", time)
+                            .putExtra("IT_COUNT", count)
 //                            .putExtra("IT_TGL_UPLOAD", tgl_upload)
 //                            .putExtra("IT_URL_GAMBAR", url_gambar)
                     );

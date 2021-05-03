@@ -86,7 +86,7 @@ public class ScanWifiActivity extends AppCompatActivity {
 ////            edt_pass.getText().toString();
 //        }
 
-        edt_ssid.setText("FEEDR-USW1000001");
+        edt_ssid.setText("FEEDR-" + name);
 
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         conf = new WifiConfiguration();
@@ -99,7 +99,6 @@ public class ScanWifiActivity extends AppCompatActivity {
         Log.d("mFile", mFile.toString());
 
 //        GetWifiConnectedState();
-
         mWifiManager.setWifiEnabled(true);
 
         WifiManager wifiManager =

@@ -229,7 +229,7 @@
                                 android:layout_alignEnd="@+id/progressBar"
                                 android:layout_marginTop="31dp"
                                 android:textAlignment="center"
-                                android:text="100%"
+                                android:text="Null"
                                 android:textAppearance="?android:attr/textAppearanceSmall" />
                         </RelativeLayout>
 
@@ -482,14 +482,31 @@
 
             </RelativeLayout>
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="Jadwal Pakan"/>
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="10dp"
+                    android:text="Jadwal Pakan"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_delete_alarm"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_baseline_delete"
+                    app:tint="@android:color/holo_red_dark" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

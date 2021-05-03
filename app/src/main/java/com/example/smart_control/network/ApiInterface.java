@@ -8,6 +8,7 @@ import com.example.smart_control.network.response.RegisterResponse;
 import com.example.smart_control.network.response.ResponseLogin;
 import com.example.smart_control.network.response.UserResponse;
 
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -22,6 +23,9 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
+
+    String BASE_URL = "http://192.168.4.1";
+
     @Headers({"Accept: application/json"})
 
 //    BASERESPONSE
