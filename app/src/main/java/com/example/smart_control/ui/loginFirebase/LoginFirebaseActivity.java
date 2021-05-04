@@ -87,7 +87,7 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 
                 if(firebaseAuth.getCurrentUser() != null){
 
-                    if (sharedPrefManager.getSpDeviceSsid() == ""){
+                    if (sharedPrefManager.getSpSsid() == ""){
                         startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
                         finish();
                     } else {

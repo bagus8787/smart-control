@@ -61,7 +61,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.img_logout:
                 auth.signOut();
 
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, "");
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_SSID, "");
 
                 sharedPrefManager.setSpDeviceSsid("");
                 startActivity(new Intent(SettingActivity.this, LoginFirebaseActivity.class));

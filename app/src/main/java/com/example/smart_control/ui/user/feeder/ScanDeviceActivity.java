@@ -73,7 +73,7 @@ public class ScanDeviceActivity extends AppCompatActivity {
                 Log.d("secret_key", sharedPrefManager.getSpIdDevice());
 
                 Toast.makeText(this, device_id, Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this, ScanWifiActivity.class)
+                startActivity(new Intent(this, AddWifiActivity.class)
                 .putExtra("name", device_id));
 
 //                Log.d("SHAREDSSID", "=" + sharedPrefManager.getSpDeviceSsid());

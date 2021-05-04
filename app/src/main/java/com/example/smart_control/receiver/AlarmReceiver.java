@@ -64,7 +64,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void pushNotification(String type) {
-
         JSONObject jPayload = new JSONObject();
         JSONObject jNotification = new JSONObject();
         JSONObject jData = new JSONObject();
@@ -127,6 +126,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     private String convertStreamToString(InputStream is) {

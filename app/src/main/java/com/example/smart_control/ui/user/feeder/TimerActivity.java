@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.example.smart_control.R;
 import com.example.smart_control.handler.DatabaseHandler;
 import com.example.smart_control.model.AlarmModel;
+import com.example.smart_control.mqtt.MqttHelper;
 import com.example.smart_control.network.ApiClient;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
@@ -30,6 +33,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.json.JSONObject;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -38,6 +52,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TimerActivity extends AppCompatActivity implements View.OnClickListener {
+    ProgressDialog mDialog;
     Button alarmbutton, cancelButton;
     EditText text, txt_count;
     PendingIntent pendingIntent;
@@ -52,6 +67,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     ApiInterface apiInterface;
     SharedPrefManager sharedPrefManager;
+    Context context;
+    MqttHelper mqttHelper;
 
     AlarmRepository alarmRepository;
 
@@ -64,6 +81,9 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         sharedPrefManager = new SharedPrefManager(this);
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
+        context = getApplicationContext();
+        mqttHelper = new MqttHelper(this);
+        mDialog = new ProgressDialog(this);
 
         AlarmModel db_model = new AlarmModel();
         db = DatabaseHandler.getInstance(this);
@@ -88,7 +108,6 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onClick(View v) {
                 boolean checked = ((CheckBox) v).isChecked();
-
                 if (checked){
                     cb_senin.setChecked(true);
                     cb_selasa.setChecked(true);
@@ -196,62 +215,140 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                     txt_count.requestFocus();
                     return;
                 }
-                if (cb_senin.isChecked()) {
-                    setAlarm(2);
-                    result.append("Senin ,");
-                }
 
-                if (cb_selasa.isChecked()) {
-                    result.append("Selasa ,");
-                    setAlarm(3);
-                }
+                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        token = task.getResult().getToken();
+                        Log.d("FCM_TOKEN", "AAAA =" + token);
 
-                if (cb_rabu.isChecked()) {
-                    result.append("Rabu ,");
-                    setAlarm(4);
-                }
+                        if (cb_senin.isChecked()) {
+                            setAlarm(2, token);
+                            result.append("Senin ,");
+                        }
 
-                if (cb_kamis.isChecked()) {
-                    result.append("Kamis ,");
-                    setAlarm(5);
-                }
+                        if (cb_selasa.isChecked()) {
+                            result.append("Selasa ,");
+                            setAlarm(3, token);
+                            Log.d("tokennn", token);
+                        }
 
-                if (cb_jumat.isChecked()) {
-                    result.append("Jumat ,");
-                    setAlarm(6);
-                }
+                        if (cb_rabu.isChecked()) {
+                            result.append("Rabu ,");
+                            setAlarm(4, token);
+                        }
 
-                if (cb_sabtu.isChecked()) {
-                    result.append("Sabtu ,");
-                    setAlarm(7);
-                }
+                        if (cb_kamis.isChecked()) {
+                            result.append("Kamis ,");
+                            setAlarm(5, token);
+                        }
 
-                if (cb_minggu.isChecked()) {
-                    result.append("Minggu ,");
-                    setAlarm(1);
-                }
+                        if (cb_jumat.isChecked()) {
+                            result.append("Jumat ,");
+                            setAlarm(6, token);
+                        }
 
-//                    startAlert(v);
-                SaveToDb(time);
+                        if (cb_sabtu.isChecked()) {
+                            result.append("Sabtu ,");
+                            setAlarm(7, token);
+                        }
 
-                Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+                        if (cb_minggu.isChecked()) {
+                            result.append("Minggu ,");
+                            setAlarm(1, token);
+                        }
+
+                        if (isInternetAvailable() == false){
+                            setOfflineAlarm();
+                        } else {
+                            setOnlineAlarm(token);
+                        }
+
+                    }
+                });
 
                 break;
-
-//                if (v.getId() == R.id.button) {
-//
-//                } else {
-//                    if (alarmManager != null) {
-//
-//                        alarmManager.cancel(pendingIntent);
-//                        Toast.makeText(this, "Alarm Disabled !!",Toast.LENGTH_LONG).show();
-//
-//                    }
-//
-//                }
         }
 
+    }
+
+    private void setOnlineAlarm(String token) {
+        Log.d("timee", time);
+        Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
+        String json = "{\"time\" : \""+ time +"\" ,\"count\":"+ Integer.parseInt(txt_count.getText().toString()) +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
+        String user = "";
+        try {
+            JSONObject obj = new JSONObject(json);
+            MqttHelper mqttHelperOnline;
+            mqttHelperOnline = new MqttHelper(context);
+            mqttHelperOnline.serverUri.toString();
+
+            MemoryPersistence memPer = new MemoryPersistence();
+            final MqttAndroidClient client = new MqttAndroidClient(
+                    context, mqttHelper.serverUri.toString(), user, memPer);
+            Log.d("clientt", client.toString());
+
+            try {
+                mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
+                mDialog.setIndeterminate(true);
+                mDialog.show();
+
+                client.connect(null, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken mqttToken) {
+                        Log.i("OnlineLog", "Client connected");
+
+                        MqttMessage mqttMessage = new MqttMessage();
+                        mqttMessage.setPayload(json.getBytes());
+                        mqttMessage.setQos(2);
+                        mqttMessage.setRetained(false);
+                        try {
+                            client.publish(sharedPrefManager.getSpIdDevice() + "/control/timer/add", mqttMessage);
+                            Log.i("OnlineLog", "Message published");
+
+                        } catch (MqttPersistenceException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+
+                        } catch (MqttException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken arg0, Throwable arg1) {
+                        // TODO Auto-generated method stub
+                        Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
+
+                    }
+                });
+                mDialog.dismiss();
+
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            Log.d("MyAppmmm", obj.toString());
+            Log.d("phonetypevalue", obj.getString("phonetype"));
+
+        } catch (Throwable tx) {
+            Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
+            );
+        }
+
+        SaveToDb(time);
+
+        Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+    }
+
+    private void setOfflineAlarm() {
+        Log.d("dddddd", time);
+
+        SaveToDb(time);
+
+        Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
     }
 
     @Override
@@ -293,21 +390,25 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    public void setAlarm(int weekno) {
+    public void setAlarm(int weekno, String tokens) {
         Log.d("weekno", "w =" + weekno);
+        Log.d("weekno", "t =" + tokens);
 
         // alarm first vibrate at 14 hrs and 40 min and repeat itself at ONE_HOUR interval
+        weekno = 3;
+
+//        startAlertAtParticularTime();
 
         intent = new Intent(this, AlarmReceiver.class).
-                putExtra("token", token);
+                putExtra("token", tokens);
         pendingIntent = PendingIntent.getBroadcast(
                 this.getApplicationContext(), 280192, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.DAY_OF_WEEK, weekno);
-        calendar.set(Calendar.HOUR_OF_DAY, 11);
-        calendar.set(Calendar.MINUTE, 32);
+        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.MINUTE, 00);
 
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
@@ -355,11 +456,18 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         db_model.setTime(timee);
         db_model.setCount(txt_count.getText().toString());
         db_model.setOld_time("cavca");
-
         db = DatabaseHandler.getInstance(this);
-
         db = new DatabaseHandler(TimerActivity.this);
         db.addRecord(db_model);
+    }
 
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress address = InetAddress.getByName("www.google.com");
+            return !address.equals("");
+        } catch (UnknownHostException e) {
+            // Log error
+        }
+        return false;
     }
 }

@@ -31,11 +31,9 @@ public class AlarmRepository {
     }
 
     public void getAlarmLocal(Context context){
-
         db = DatabaseHandler.getInstance(context);
         // Get all posts from database
         ArrayList<AlarmModel> posts = db.getAllRecord();
-
         alarmLiveData.postValue(posts);
 
         Log.d("post", "=" + posts.toString());

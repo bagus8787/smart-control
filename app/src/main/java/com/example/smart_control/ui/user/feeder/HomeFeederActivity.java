@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,10 +35,14 @@ import com.example.smart_control.R;
 import com.example.smart_control.adapter.AdapterListAlarm;
 import com.example.smart_control.base.scan_broadcast.ScanBroadcastActivity;
 import com.example.smart_control.handler.DatabaseHandler;
+import com.example.smart_control.handler.DatabaseNotif;
 import com.example.smart_control.model.AlarmModel;
+import com.example.smart_control.model.Notification;
+import com.example.smart_control.model.StatusPakan;
 import com.example.smart_control.mqtt.MqttActivity;
 import com.example.smart_control.mqtt.MqttHelper;
 import com.example.smart_control.mqtt.MqttTesActivity;
+import com.example.smart_control.mqtt.WifiConnectActivity;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.WifiActivity;
@@ -53,7 +59,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
@@ -69,7 +77,9 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +87,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -95,7 +107,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
 //    private static String AUTH_KEY;
     LinearLayout ly_timer, ly_wifi, ly_img22;
-    TextView mTextView, txt_nama;
+    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan;
     Button btn_beri_pakan;
     ImageView img_setting, img_notif, img_delete_alarm;
     RecyclerView rv_time_alarm;
@@ -107,6 +119,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     ApiInterface apiInterface;
     SharedPrefManager sharedPrefManager;
     DatabaseHandler db;
+    DatabaseNotif dbNotif;
     WifiManager wifiManager;
 
     ConnectivityManager connManager;
@@ -115,16 +128,19 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     private String token;
     String m_Text;
     Context context;
+    ProgressDialog mDialog;
 
     private TextView txtProgress;
     private ProgressBar progressBar;
 
     private int pStatus = 0;
     private Integer pDefault = 0;
-    final long period = 1000;
+    final long period = 2000;
 
     private Handler handler = new Handler();
     MqttHelper mqttHelper;
+
+    String a = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +149,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
         context = getContext();
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
-        sharedPrefManager = new SharedPrefManager(this);
+        sharedPrefManager = new SharedPrefManager(context);
+        mDialog = new ProgressDialog(this);
 
         //        Set WIFI to enabled
         wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -147,6 +164,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         mqttHelper = new MqttHelper(getApplicationContext());
 
         db = DatabaseHandler.getInstance(context);
+        dbNotif = DatabaseNotif.getInstance(context);
+
+        Log.d("dbnnnn", dbNotif.getAllRecord().toString());
 
         auth = FirebaseAuth.getInstance();
         Log.d("autaaaaaah", "= " + auth.getTenantId());
@@ -176,6 +196,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         ly_img22    = findViewById(R.id.ly_img22);
         rv_time_alarm = findViewById(R.id.rv_time_alarm);
         btn_beri_pakan = findViewById(R.id.btn_beri_pakan);
+        txt_status_device = findViewById(R.id.txt_status_device);
+        txt_status_pakan = findViewById(R.id.txt_status_pakan);
 
         //ImageViewButton
         img_notif   = findViewById(R.id.img_notif);
@@ -194,55 +216,13 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
         txt_nama.setText("Haloo ," + sharedPrefManager.getSpNama());
 
-//        new Timer().schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                // do your task here
-//                Call<StatusPakan> status_pakan = apiInterface.statusPakan();
-//                status_pakan.enqueue(new Callback<StatusPakan>() {
-//                    @Override
-//                    public void onResponse(Call<StatusPakan> call, Response<StatusPakan> response) {
-//                        String status = String.valueOf(response.body().getPersen());
-//                        Log.d("statusss", "=" + response.body().getStatus().toString());
-////                if (status.equals("HIGH")){
-////                    pDefault = 100;
-////                } else if (status == "MEDIUM"){
-////                    pDefault = 75;
-////                } else if (status == "LOW"){
-////                    pDefault = 35;
-////                }
-//                        pDefault = response.body().getPersen();
-//
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                while (pStatus <= pDefault) {
-//                                    handler.post(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            progressBar.setProgress(pStatus);
-//                                            progressBar.setMax(10);
-//                                            txtProgress.setText(pStatus + "");
-//                                        }
-//                                    });
-//                                    try {
-//                                        Thread.sleep(200);
-//                                    } catch (InterruptedException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    pStatus++;
-//                                }
-//                            }
-//                        }).start();
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<StatusPakan> call, Throwable t) {
-//
-//                    }
-//                });
-//            }
-//        }, 0, period);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // do your task here
+
+            }
+        }, 0, period);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -293,6 +273,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        //Cek Connection
+        cek_connection();
     }
 
     @Override
@@ -315,7 +298,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.ly_wifi:
-                startActivity(new Intent(HomeFeederActivity.this, MqttTesActivity.class));
+                startActivity(new Intent(HomeFeederActivity.this, WifiConnectActivity.class));
                 break;
 
             case R.id.ly_img22:
@@ -324,13 +307,15 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
             case R.id.btn_beri_pakan:
                 Log.d("wifi", mWifi.toString());
+                Log.d("netttt", String.valueOf(isInternetAvailable()));
 
-                if (mWifi.isConnected()){
-
+                if (isInternetAvailable() == false){
                     OfflineFeeder();
                 } else {
+//                    mDialog = new ProgressDialog(context);
                     OnlineFeeder();
                 }
+
                 break;
 
             case R.id.img_setting:
@@ -401,24 +386,24 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         new Thread(new Runnable() {
             @Override
             public void run() {
-                pushNotification(type);
+                pushNotification(type, token, "Google I/O 2016", "Firebase Cloud Messaging (App)");
             }
         }).start();
     }
 
-    private void pushNotification(String type) {
+    private void pushNotification(String type, String tokens, String title, String body) {
+        Log.d("toesnss", tokens);
         JSONObject jPayload = new JSONObject();
         JSONObject jNotification = new JSONObject();
         JSONObject jData = new JSONObject();
         try {
-            jNotification.put("title", "Google I/O 2016");
-            jNotification.put("body", "Firebase Cloud Messaging (App)");
+            jNotification.put("title", title);
+            jNotification.put("body", body);
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
             jNotification.put("click_action", "OPEN_ACTIVITY_1");
             jNotification.put("icon", "ic_notification");
-
-            jData.put("picture", "https://miro.medium.com/max/1400/1*QyVPcBbT_jENl8TGblk52w.png");
+//            jData.put("picture", "https://miro.medium.com/max/1400/1*QyVPcBbT_jENl8TGblk52w.png");
 
             switch(type) {
                 case "tokens":
@@ -434,7 +419,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                     jPayload.put("condition", "'sport' in topics || 'news' in topics");
                     break;
                 default:
-                    jPayload.put("to", token);
+                    jPayload.put("to", tokens);
             }
 
             jPayload.put("priority", "high");
@@ -466,6 +451,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                     mTextView.setText(resp);
                 }
             });
+
+            SaveToDbNotif("a",title, body);
+
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
@@ -517,137 +505,420 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         Log.d("dfifference", String.valueOf(difference));
     }
 
-    public void OnlineFeeder(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
-        builder.setTitle("Jumlah");
-        View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
-        // Set up the input
-        final EditText input = (EditText) viewInflated.findViewById(R.id.input);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        builder.setView(viewInflated);
-
-        // Set up the buttons
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+    public void cek_connection(){
+        new Timer().schedule(new TimerTask() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                m_Text = input.getText().toString();
-
-                String json = "{\"count\":"+ m_Text +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
-                String user = "";
-
-                try {
-                    JSONObject obj = new JSONObject(json);
-                    MqttHelper mqttHelperOnline;
-                    mqttHelperOnline = new MqttHelper(context);
-                    mqttHelperOnline.serverUri.toString();
-
-                    MemoryPersistence memPer = new MemoryPersistence();
-                    final MqttAndroidClient client = new MqttAndroidClient(
-                            context, mqttHelper.serverUri.toString(), user, memPer);
-                    Log.d("clientt", client.toString());
-                    try {
-                        client.connect(null, new IMqttActionListener() {
-                            @Override
-                            public void onSuccess(IMqttToken mqttToken) {
-                                Log.i("OnlineLog", "Client connected");
-
-                                MqttMessage mqttMessage = new MqttMessage();
-                                mqttMessage.setPayload(json.getBytes());
-                                mqttMessage.setQos(2);
-                                mqttMessage.setRetained(false);
-                                try {
-                                    client.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", mqttMessage);
-                                    Log.i("OnlineLog", "Message published");
-
-                                } catch (MqttPersistenceException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-
-                                } catch (MqttException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(IMqttToken arg0, Throwable arg1) {
-                                // TODO Auto-generated method stub
-                                Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
-
-                            }
-                        });
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("MyAppmmm", obj.toString());
-                    Log.d("phonetypevalue", obj.getString("phonetype"));
-
-                } catch (Throwable tx) {
-                    Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
-                    );
+            public void run() {
+                // do your task here
+                if (isInternetAvailable() == false){
+                    txt_status_device.setText("Device : Offline");
+                    OfflineStatusPakan();
+                } else {
+                    txt_status_device.setText("Device : Online");
+                    OnlineStatusPakan();
                 }
-                Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
             }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+        }, 0, period);
+
+        //set status pakan
+//        new Timer().schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                // do your task here
+//                if (isInternetAvailable() == false){
+//                    OfflineStatusPakan();
+//                } else {
+//                    OnlineStatusPakan();
+//                }
+//            }
+//        }, 0, period);
+
+    }
+
+    public void OnlineFeeder(){
+        Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
+        String json = "{\"count\":"+ 1 +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
+        String user = "";
+        try {
+            JSONObject obj = new JSONObject(json);
+            MqttHelper mqttHelperOnline;
+            mqttHelperOnline = new MqttHelper(context);
+            mqttHelperOnline.serverUri.toString();
+
+            MemoryPersistence memPer = new MemoryPersistence();
+            final MqttAndroidClient client = new MqttAndroidClient(
+                    context, mqttHelper.serverUri.toString(), user, memPer);
+            Log.d("clientt", client.toString());
+            try {
+                mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
+                mDialog.setIndeterminate(true);
+                mDialog.show();
+
+                client.connect(null, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken mqttToken) {
+                        Log.i("OnlineLog", "Client connected");
+
+                        MqttMessage mqttMessage = new MqttMessage();
+                        mqttMessage.setPayload(json.getBytes());
+                        mqttMessage.setQos(2);
+                        mqttMessage.setRetained(false);
+                        try {
+                            client.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", mqttMessage);
+                            Log.i("OnlineLog", "Message published");
+
+                        } catch (MqttPersistenceException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+
+                        } catch (MqttException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken arg0, Throwable arg1) {
+                        // TODO Auto-generated method stub
+                        Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
+
+                    }
+                });
+                mDialog.dismiss();
+
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            Log.d("MyAppmmm", obj.toString());
+            Log.d("phonetypevalue", obj.getString("phonetype"));
+
+        } catch (Throwable tx) {
+            Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
+            );
+        }
+
+        Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                token = task.getResult().getToken();
+                Log.d("FCM_TOKEN", "AAAA =" + token);
+
+                pushNotification("", token ,"Pemberian pakan kucing berhasil ✔" ,"Tenang lur kucing e gak keluwen");
+
             }
         });
 
-        builder.show();
-
-        Integer p = 1;
-
-
-
-        String a = "";
+//        AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
+//        builder.setTitle("Jumlah");
+//        View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
+//        // Set up the input
+//        final EditText input = (EditText) viewInflated.findViewById(R.id.input);
+//        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+//        builder.setView(viewInflated);
+//
+//        // Set up the buttons
+//        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//                m_Text = input.getText().toString();
+//
+//                Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
+//
+//                String json = "{\"count\":"+ m_Text +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
+//                String user = "";
+//
+//                try {
+//                    JSONObject obj = new JSONObject(json);
+//                    MqttHelper mqttHelperOnline;
+//                    mqttHelperOnline = new MqttHelper(context);
+//                    mqttHelperOnline.serverUri.toString();
+//
+//                    MemoryPersistence memPer = new MemoryPersistence();
+//                    final MqttAndroidClient client = new MqttAndroidClient(
+//                            context, mqttHelper.serverUri.toString(), user, memPer);
+//                    Log.d("clientt", client.toString());
+//                    try {
+//                        client.connect(null, new IMqttActionListener() {
+//                            @Override
+//                            public void onSuccess(IMqttToken mqttToken) {
+//                                Log.i("OnlineLog", "Client connected");
+//
+//                                MqttMessage mqttMessage = new MqttMessage();
+//                                mqttMessage.setPayload(json.getBytes());
+//                                mqttMessage.setQos(2);
+//                                mqttMessage.setRetained(false);
+//                                try {
+//                                    client.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", mqttMessage);
+//                                    Log.i("OnlineLog", "Message published");
+//
+//                                } catch (MqttPersistenceException e) {
+//                                    // TODO Auto-generated catch block
+//                                    e.printStackTrace();
+//
+//                                } catch (MqttException e) {
+//                                    // TODO Auto-generated catch block
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onFailure(IMqttToken arg0, Throwable arg1) {
+//                                // TODO Auto-generated method stub
+//                                Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
+//
+//                            }
+//                        });
+//                    } catch (MqttException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Log.d("MyAppmmm", obj.toString());
+//                    Log.d("phonetypevalue", obj.getString("phonetype"));
+//
+//                } catch (Throwable tx) {
+//                    Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
+//                    );
+//                }
+//                Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.cancel();
+//            }
+//        });
+//
+//        builder.show();
+//
+//        Integer p = 1;
+//
+//        String a = "";
     }
 
     public void OfflineFeeder(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
-        builder.setTitle("Jumlah");
-        View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
-        // Set up the input
-        final EditText input = (EditText) viewInflated.findViewById(R.id.input);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        builder.setView(viewInflated);
+//        m_Text = input.getText().toString();
 
-// Set up the buttons
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        Call<String> beriPakan = apiInterface.beriPakan(
+                "1"
+        );
+        Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
+        beriPakan.enqueue(new Callback<String>() {
             @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+            public void onResponse(Call<String> call, Response<String> response) {
+            }
 
-                        m_Text = input.getText().toString();
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
 
-                        Call<String> beriPakan = apiInterface.beriPakan(
-                                m_Text
-                        );
+            }
+        });
 
-                        Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
-                        beriPakan.enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                            }
+//        AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
+//        builder.setTitle("Jumlah");
+//        View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
+//        // Set up the input
+//        final EditText input = (EditText) viewInflated.findViewById(R.id.input);
+//        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+//        builder.setView(viewInflated);
+//
+//// Set up the buttons
+//        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//            @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//
+//                        m_Text = input.getText().toString();
+//
+//                        Call<String> beriPakan = apiInterface.beriPakan(
+//                                m_Text
+//                        );
+//                        Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
+//                        beriPakan.enqueue(new Callback<String>() {
+//                            @Override
+//                            public void onResponse(Call<String> call, Response<String> response) {
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<String> call, Throwable t) {
+//
+//                            }
+//                        });
+//                    }
+//                });
+//                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//
+//                builder.show();
+    }
 
-                            @Override
-                            public void onFailure(Call<String> call, Throwable t) {
+    public void OfflineStatusPakan(){
+        Call<StatusPakan> status_pakan = apiInterface.statusPakan();
+        status_pakan.enqueue(new Callback<StatusPakan>() {
+            @Override
+            public void onResponse(Call<StatusPakan> call, Response<StatusPakan> response) {
+                String status = String.valueOf(response.body().getPersen());
+                Log.d("statusss", "=" + response.body().getLevel().toString());
 
-                            }
-                        });
-                    }
-                });
-                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                if (response.body().getLevel().equals("HIGH")){
+                    txt_status_pakan.setText("Penuh");
+                } else if (response.body().getLevel().equals("MEDIUM")){
+                    txt_status_pakan.setText("Medium");
+                } else if (response.body().getLevel().equals("LOW")){
+                    txt_status_pakan.setText("Sedikit");
+                }
+
+                if (response.body().getPersen() == 10){
+                    pDefault = 100;
+                } else if (response.body().getPersen() == 9){
+                    pDefault = 90;
+                } else if (response.body().getPersen() == 8){
+                    pDefault = 80;
+                } else if (response.body().getPersen() == 7){
+                    pDefault = 70;
+                } else if (response.body().getPersen() == 6){
+                    pDefault = 60;
+                } else if (response.body().getPersen() == 5) {
+                    pDefault = 50;
+                } else if (response.body().getPersen() == 4){
+                    pDefault = 40;
+                } else if (response.body().getPersen() == 3){
+                    pDefault = 30;
+                } else if (response.body().getPersen() == 2){
+                    pDefault = 20;
+                } else if (response.body().getPersen() == 1){
+                    pDefault = 10;
+                } else if (response.body().getPersen() == 11) {
+                    pDefault = 100;
+                }
+//                            pDefault = response.body().getPersen();
+
+                new Thread(new Runnable() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                    public void run() {
+                        while (pStatus <= pDefault) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setProgress(pStatus);
+                                    txtProgress.setText(pDefault + "");
+                                }
+                            });
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            pStatus++;
+                        }
                     }
-                });
+                }).start();
+            }
 
-                builder.show();
+            @Override
+            public void onFailure(Call<StatusPakan> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void OnlineStatusPakan(){
+        mqttHelper.mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean b, String s) {
+                Log.w("Debug","Connected");
+            }
+
+            @Override
+            public void connectionLost(Throwable throwable) {
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                Log.w("Debugss",mqttMessage.toString());
+                Log.w("topicss", topic.toString());
+
+                String feeder_topic_jarak = sharedPrefManager.getSpIdDevice() + "/feeder/jarak";
+                Log.d("federrr", feeder_topic_jarak);
+                switch (topic.toString()){
+                    case "USW1000001/feeder/jarak":
+//                                    textView1.setText(mqttMessage.toString());
+//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+                        Log.d("pddddd", mqttMessage.toString());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (pStatus <= pDefault) {
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressBar.setProgress(pStatus);
+                                            txtProgress.setText(pStatus + "");
+                                        }
+                                    });
+                                    try {
+                                        Thread.sleep(200);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    pStatus++;
+                                }
+                            }
+                        }).start();
+                        break;
+
+                    case "USW1000001/feeder/pakan":
+//                                    textView1.setText(mqttMessage.toString());
+//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+                        Log.d("pddddd", mqttMessage.toString());
+                        if (mqttMessage.toString().equals("HIGH")){
+                            txt_status_pakan.setText("Penuh");
+                        } else if (mqttMessage.toString().equals("MEDIUM")){
+                            txt_status_pakan.setText("Medium");
+                        } else if (mqttMessage.toString().equals("LOW")){
+                            txt_status_pakan.setText("Sedikit");
+                        }
+//                        txt_status_pakan.setText(mqttMessage.toString());
+                        break;
+
+                    default:
+                        Log.d("Error","Error ocquired");
+                }
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+            }
+        });
+    }
+
+    public void SaveToDbNotif(String timee, String title, String body){
+        DatabaseNotif db_notif;
+
+        Notification db_model = new Notification();
+        db_model.setTitle(title);
+        db_model.setBody(body);
+
+        db_notif = DatabaseNotif.getInstance(this);
+//        db_notif = new DatabaseNotif(HomeFeederActivity.this);
+        db_notif.addRecord(db_model);
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress address = InetAddress.getByName("www.google.com");
+            return !address.equals("");
+        } catch (UnknownHostException e) {
+            // Log error
+        }
+        return false;
     }
 
 }

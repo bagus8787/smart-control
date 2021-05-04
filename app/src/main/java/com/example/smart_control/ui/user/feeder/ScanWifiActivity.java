@@ -78,14 +78,6 @@ public class ScanWifiActivity extends AppCompatActivity {
 
         btn_konek = findViewById(R.id.btn_konek);
 
-//        edt_ssid.setText(name);
-//        if (edt_pass.getText().toString().isEmpty()){
-//            edt_pass.setText("12345678");
-//        } else {
-//            Log.d("passworddd", "= " + edt_pass.getText().toString());
-////            edt_pass.getText().toString();
-//        }
-
         edt_ssid.setText("FEEDR-" + name);
 
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -145,6 +137,8 @@ public class ScanWifiActivity extends AppCompatActivity {
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, SSID);
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, PSWD);
 
+                mWifiManager.setWifiEnabled(true);
+
                 Toast.makeText(ScanWifiActivity.this, "Berhasil konek Device", Toast.LENGTH_LONG).show();
 
                 startActivity(new Intent(ScanWifiActivity.this, AddWifiActivity.class));
@@ -200,21 +194,6 @@ public class ScanWifiActivity extends AppCompatActivity {
             Log.d("SSIDDDDD", "= " + SSID);
         }
 
-//        if (mFile.exists()) {
-//            Dictionary<String, String> mdDictionary = readConfig();
-//            if (!mdDictionary.isEmpty()) {
-//                SSID = mdDictionary.get(SSID_CONFIG);
-//                PSWD = mdDictionary.get(PSWD_CONFIG);
-//                Log.i(TAG, "SSID = " + SSID);
-//                Log.i(TAG, "PSWD = " + PSWD);
-//                connectWifi(SSID, PSWD);
-//
-//                Log.d("SSID", SSID.toString());
-//                Log.d("PSWD", PSWD.toString());
-//
-//                // mHanlder.post(task);
-//            }
-//        }
     }
 
     public static String getCurrentSsid(Context context) {
