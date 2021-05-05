@@ -298,7 +298,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.ly_wifi:
-                startActivity(new Intent(HomeFeederActivity.this, WifiConnectActivity.class));
+                startActivity(new Intent(HomeFeederActivity.this, MqttTesActivity.class));
                 break;
 
             case R.id.ly_img22:

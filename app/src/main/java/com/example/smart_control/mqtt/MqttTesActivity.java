@@ -72,6 +72,7 @@ public class MqttTesActivity extends AppCompatActivity {
 
         wifiList = findViewById(R.id.wifiList);
         Button buttonScan = findViewById(R.id.scanBtn);
+
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (!wifiManager.isWifiEnabled()) {
             Toast.makeText(getApplicationContext(), "Turning WiFi ON...", Toast.LENGTH_LONG).show();
@@ -90,7 +91,7 @@ public class MqttTesActivity extends AppCompatActivity {
             }
         });
 
-        startMqtt();
+//        startMqtt();
     }
 
     @Override

@@ -107,7 +107,7 @@
                         android:layout_marginStart="0dp"
                         android:layout_marginLeft="15dp"
                         android:layout_marginBottom="20dp"
-                        android:text="Cek makanan kucingmu hari ini ,jangan sampai kucingmu kelaparan !"
+                        android:text="Pastikan kucingmu terjamin makanannya, jangan sampai kucingmu kelaparan!"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
 
@@ -152,6 +152,7 @@
                 </RelativeLayout>
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -160,12 +161,128 @@
                     android:text="Pemberian pakan terakhir Hari ini pukul 07.00 WIB"/>
 
                 <TextView
+                    android:id="@+id/txt_status_device"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Device : Online"/>
+
+                <TextView
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="20dp"
                     android:textColor="@color/colorPrimaryDark"
                     android:text="Pemberian pakan selanjutnya pukul 12.00 WIB 5 Jam dari sekarang"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/bg_rounded"
+                    android:backgroundTint="@color/colorWhite">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="0dp">
+
+                        <ProgressBar
+                            android:id="@+id/progressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="86dp"
+                            android:layout_height="85dp"
+                            android:layout_marginTop="10dp"
+                            android:indeterminate="false"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/custom_progressbar_drawable"
+                            android:secondaryProgress="0" />
+
+                        <TextView
+                            android:id="@+id/txtProgress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignStart="@+id/progressBar"
+                            android:layout_alignTop="@+id/progressBar"
+                            android:layout_alignEnd="@+id/progressBar"
+                            android:layout_marginTop="31dp"
+                            android:text="Null"
+                            android:textAlignment="center"
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                        <TextView
+                            android:id="@+id/txt_v_stats"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/progressBar"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:text="Status Pakan :" />
+
+                        <TextView
+                            android:id="@+id/txt_status_pakan"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_v_stats"
+                            android:layout_alignStart="@+id/txt_v_stats"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginTop="5dp"
+                            android:text="-"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/bg_rounded"
+                    android:backgroundTint="@color/colorWhite">
+
+                    <ImageView
+                        android:layout_width="90dp"
+                        android:layout_height="100dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="0dp"
+                        android:src="@drawable/empty_eat" />
+
+                    <Button
+                        android:id="@+id/btn_beri_pakan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="28dp"
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@drawable/bg_rounded"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:text="Beri Pakan"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorWhite" />
+
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -181,67 +298,7 @@
                         android:layout_marginRight="50dp"
                         android:orientation="vertical">
 
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="120dp"
-                            android:src="@drawable/empty_eat"/>
 
-                        <Button
-                            android:id="@+id/btn_beri_pakan"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded"
-                            android:backgroundTint="@color/colorPrimaryDark"
-                            android:textColor="@color/colorWhite"
-                            android:text="Beri Pakan"
-                            android:textAllCaps="false"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:orientation="vertical">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="120dp">
-
-                            <ProgressBar
-                                android:id="@+id/progressBar"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="86dp"
-                                android:layout_height="85dp"
-                                android:layout_marginTop="10dp"
-                                android:indeterminate="false"
-                                android:max="100"
-                                android:progress="0"
-                                android:progressDrawable="@drawable/custom_progressbar_drawable"
-                                android:secondaryProgress="0" />
-
-                            <TextView
-                                android:id="@+id/txtProgress"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignStart="@+id/progressBar"
-                                android:layout_alignTop="@+id/progressBar"
-                                android:layout_alignEnd="@+id/progressBar"
-                                android:layout_marginTop="31dp"
-                                android:textAlignment="center"
-                                android:text="Null"
-                                android:textAppearance="?android:attr/textAppearanceSmall" />
-                        </RelativeLayout>
-
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded"
-                            android:backgroundTint="@color/colorPrimaryDark"
-                            android:textColor="@color/colorWhite"
-                            android:textAllCaps="false"
-                            android:clickable="false"
-                            android:text="Status Pakan"/>
 
                     </LinearLayout>
 
@@ -349,6 +406,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -377,7 +435,7 @@
                                 android:src="@drawable/img_food_cat" />
 
                             <TextView
-                                android:id="@+id/txt_status_pakan"
+                                android:id="@+id/txt_status_paskan"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"

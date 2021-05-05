@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,6 +69,8 @@ public class WifiConnectActivity extends AppCompatActivity implements View.OnCli
             public void onReceive(Context c, Intent intent)
             {
                 results = wifi.getScanResults();
+
+                Log.d("rsultt", results.toString());
                 size = results.size();
             }
         }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
@@ -90,7 +93,6 @@ public class WifiConnectActivity extends AppCompatActivity implements View.OnCli
                 arraylist.add(item);
                 size--;
                 adapter.notifyDataSetChanged();
-
             }
         }
         catch (Exception e)
