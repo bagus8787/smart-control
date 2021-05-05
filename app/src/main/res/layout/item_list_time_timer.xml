@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_margin="10dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="70dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
 
     <TextView
         android:id="@+id/txt_time"
@@ -13,12 +14,25 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="60dp"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="10dp"
         android:text="21:30"
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/txt_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_time"
+        android:layout_alignStart="@+id/txt_time"
+        android:layout_alignEnd="@+id/txt_time"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:textAlignment="center"
+        android:text="3 Kali" />
+
     <Switch
+        android:visibility="invisible"
         android:id="@+id/sw_on_off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,5 +40,12 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="60dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:background="@android:color/darker_gray" />
 
 </RelativeLayout>

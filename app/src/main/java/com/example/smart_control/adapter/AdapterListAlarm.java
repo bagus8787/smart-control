@@ -102,8 +102,8 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
 
         public void setCount(String count) {
             this.count = count;
-//            rvCount = mView.findViewById(R.id.txt_count);
-//            rvCount.setText(count.toUpperCase());
+            rvCount = mView.findViewById(R.id.txt_count);
+            rvCount.setText(count + " Kali");
 //            Log.d("setCount", String.valueOf(rvCount));
         }
 

@@ -62,6 +62,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 auth.signOut();
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_SSID, "");
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, "");
 
                 sharedPrefManager.setSpDeviceSsid("");
                 startActivity(new Intent(SettingActivity.this, LoginFirebaseActivity.class));

@@ -339,7 +339,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         SaveToDb(time);
 
         Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
-        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+//        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
     }
 
     private void setOfflineAlarm() {
@@ -348,7 +348,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         SaveToDb(time);
 
         Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
-        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+//        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
     }
 
     @Override

@@ -49,6 +49,13 @@
             android:layout_width="match_parent"
             android:layout_height="500dp"/>
 
+
+        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+            android:id="@+id/spinner_wifi"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"/>
+
         <Button
             android:id="@+id/scanBtn"
             android:layout_width="match_parent"

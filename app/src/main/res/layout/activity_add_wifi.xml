@@ -95,12 +95,11 @@
                 android:layout_height="match_parent"
                 app:srcCompat="@drawable/ic_baseline_wifi" />
 
-            <EditText
-                android:id="@+id/edt_ssid"
+            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                android:id="@+id/spinner_wifi"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:hint="Masukkan Nama Wifi/SSID"/>
+                android:layout_height="50dp"
+                android:layout_marginLeft="5dp"/>
 
         </LinearLayout>
 
@@ -143,5 +142,11 @@
             android:textColor="@android:color/white" />
 
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/wifiList"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

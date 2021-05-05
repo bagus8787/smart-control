@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.example.smart_control.R;
 
@@ -19,8 +21,9 @@ public class DetailDevicesActivity extends AppCompatActivity {
     View mColorView;
 
     Bitmap bitmap;
-    String id, time, count;
-    EditText ip_time, ip_count;
+    String id, time, count, time_now;
+    EditText ip_time_before, ip_count;
+    TimePicker datePicker1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +34,23 @@ public class DetailDevicesActivity extends AppCompatActivity {
         time  = getIntent().getStringExtra("IT_TIME");
         count  = getIntent().getStringExtra("IT_COUNT");
 
-        ip_time = findViewById(R.id.ip_time);
+        ip_time_before = findViewById(R.id.ip_time_before);
         ip_count = findViewById(R.id.ip_count);
+        datePicker1 = findViewById(R.id.datePicker1);
+        datePicker1.setIs24HourView(true);
 
-        ip_time.setText(time);
+        ip_time_before.setText(time);
         ip_count.setText(count);
+
+        datePicker1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                time_now = String.format("%02d:%02d",hourOfDay, minute);
+
+                setTime(time_now);
+            }
+
+        });
 
         mImageView = findViewById(R.id.imageView);
         mResultView = findViewById(R.id.result);
@@ -67,5 +82,10 @@ public class DetailDevicesActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void setTime(String time) {
+        time_now = time;
+        Log.d("timessskkk", "= " + time_now);
     }
 }

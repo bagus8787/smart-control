@@ -16,6 +16,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import com.example.smart_control.R;
 import com.example.smart_control.receiver.WifiReceiver;
 import com.example.smart_control.utils.SharedPrefManager;
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -37,6 +40,10 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONObject;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MqttTesActivity extends AppCompatActivity {
     String LOGTAG ="mqttttttt";
     MqttHelper mqttHelper;
@@ -45,6 +52,7 @@ public class MqttTesActivity extends AppCompatActivity {
     Context context;
     TextView dataReceived;
     TextView textView,textView1,textView2,olcum;
+    SearchableSpinner spinner_wifi;
 
 //    Scan Wifi
     private ListView wifiList;
@@ -69,6 +77,24 @@ public class MqttTesActivity extends AppCompatActivity {
         dataReceived = (TextView) findViewById(R.id.dataReceived);
 //        chart = (LineChart) findViewById(R.id.chart);
 //        mChart = new ChartHelper(chart);
+
+        spinner_wifi = findViewById(R.id.spinner_wifi);
+
+        spinner_wifi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.colorBlack));
+
+                String nama = parent.getItemAtPosition(position).toString();
+
+                Toast.makeText(MqttTesActivity.this, nama, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         wifiList = findViewById(R.id.wifiList);
         Button buttonScan = findViewById(R.id.scanBtn);
@@ -97,7 +123,7 @@ public class MqttTesActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        receiverWifi = new WifiReceiver(wifiManager, wifiList);
+        receiverWifi = new WifiReceiver(wifiManager, wifiList, spinner_wifi);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         registerReceiver(receiverWifi, intentFilter);
@@ -121,6 +147,25 @@ public class MqttTesActivity extends AppCompatActivity {
             wifiManager.startScan();
         }
     }
+
+//    public void ListWifi(){
+//
+//        Call<ProvinsiResponse> provinsiResponseCall = apiInterface.getProv();
+//        provinsiResponseCall.enqueue(new Callback<ProvinsiResponse>() {
+//            @Override
+//            public void onResponse(Call<ProvinsiResponse> call, Response<ProvinsiResponse> response) {
+//                provinsiArrayAdapter = new ArrayAdapter<Provinsi>(Register2Activity.this, android.R.layout.simple_spinner_dropdown_item, response.body().getProvinsis());
+//                provinsiArrayAdapter.setDropDownViewResource(R.layout.list_item_region);
+//                searchableSpinnerProv.setTitle("Pilih Provinsi");
+//                searchableSpinnerProv.setAdapter(provinsiArrayAdapter);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ProvinsiResponse> call, Throwable t) {
+//
+//            }
+//        });
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

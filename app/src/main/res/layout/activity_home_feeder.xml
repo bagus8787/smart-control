@@ -105,8 +105,8 @@
                         android:layout_below="@+id/txt_nama"
                         android:layout_alignStart="@+id/txt_nama"
                         android:layout_marginStart="0dp"
+                        android:layout_marginBottom="10dp"
                         android:layout_marginLeft="15dp"
-                        android:layout_marginBottom="20dp"
                         android:text="Pastikan kucingmu terjamin makanannya, jangan sampai kucingmu kelaparan!"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
@@ -162,15 +162,28 @@
 
                 <TextView
                     android:id="@+id/txt_status_device"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="20dp"
+                    android:text="Device : Online"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:text="Device : Online"/>
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="--"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:visibility="gone"
@@ -186,6 +199,7 @@
                     android:layout_height="100dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/bg_rounded"
                     android:backgroundTint="@color/colorWhite">
 
@@ -572,14 +586,11 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:background="@drawable/bg_rounded"
-                android:backgroundTint="@color/colorWhite"
                 android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_time_alarm"
                     android:clickable="true"
-                    android:padding="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:focusable="true" />

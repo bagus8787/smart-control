@@ -85,6 +85,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Timer;
@@ -107,7 +108,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
 //    private static String AUTH_KEY;
     LinearLayout ly_timer, ly_wifi, ly_img22;
-    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan;
+    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan, txt_time;
     Button btn_beri_pakan;
     ImageView img_setting, img_notif, img_delete_alarm;
     RecyclerView rv_time_alarm;
@@ -135,7 +136,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     private int pStatus = 0;
     private Integer pDefault = 0;
-    final long period = 2000;
+    final long period = 3000;
 
     private Handler handler = new Handler();
     MqttHelper mqttHelper;
@@ -198,6 +199,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         btn_beri_pakan = findViewById(R.id.btn_beri_pakan);
         txt_status_device = findViewById(R.id.txt_status_device);
         txt_status_pakan = findViewById(R.id.txt_status_pakan);
+        txt_time = findViewById(R.id.txt_time);
 
         //ImageViewButton
         img_notif   = findViewById(R.id.img_notif);
@@ -215,14 +217,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         btn_beri_pakan.setOnClickListener(this);
 
         txt_nama.setText("Haloo ," + sharedPrefManager.getSpNama());
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                // do your task here
-
-            }
-        }, 0, period);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -506,32 +500,32 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void cek_connection(){
-        new Timer().schedule(new TimerTask() {
-            @Override
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
             public void run() {
-                // do your task here
                 if (isInternetAvailable() == false){
-                    txt_status_device.setText("Device : Offline");
                     OfflineStatusPakan();
                 } else {
-                    txt_status_device.setText("Device : Online");
                     OnlineStatusPakan();
                 }
+                handler.postDelayed(this, 1000);
             }
-        }, 0, period);
+        };
+        runnable.run();
 
-        //set status pakan
 //        new Timer().schedule(new TimerTask() {
 //            @Override
 //            public void run() {
 //                // do your task here
 //                if (isInternetAvailable() == false){
+////                    txt_status_device.setText("Device : Offline");
 //                    OfflineStatusPakan();
 //                } else {
+////                    txt_status_device.setText("Device : Online");
 //                    OnlineStatusPakan();
 //                }
 //            }
-//        }, 0, period);
+//        }, 1, 10000);
 
     }
 
@@ -759,12 +753,18 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void OfflineStatusPakan(){
+        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+        txt_time.setText(currentTime.toString());
+
+        String status = "Device : Offline";
+        txt_status_device.setText(status);
+
         Call<StatusPakan> status_pakan = apiInterface.statusPakan();
         status_pakan.enqueue(new Callback<StatusPakan>() {
             @Override
             public void onResponse(Call<StatusPakan> call, Response<StatusPakan> response) {
                 String status = String.valueOf(response.body().getPersen());
-                Log.d("statusss", "=" + response.body().getLevel().toString());
+                Log.d("statusss", "=" + response.body().getPersen().toString() + "||" + response.body().getLevel().toString());
 
                 if (response.body().getLevel().equals("HIGH")){
                     txt_status_pakan.setText("Penuh");
@@ -798,7 +798,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                     pDefault = 100;
                 }
 //                            pDefault = response.body().getPersen();
-
+                txtProgress.setText(pDefault + "%");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -806,8 +806,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    progressBar.setProgress(pStatus);
-                                    txtProgress.setText(pDefault + "");
+                                    progressBar.setProgress(pDefault);
                                 }
                             });
                             try {
@@ -829,6 +828,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void OnlineStatusPakan(){
+        String status = "Device : Online";
+        txt_status_device.setText(status);
+
         mqttHelper.mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
@@ -847,9 +849,36 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 String feeder_topic_jarak = sharedPrefManager.getSpIdDevice() + "/feeder/jarak";
                 Log.d("federrr", feeder_topic_jarak);
                 switch (topic.toString()){
-                    case "USW1000001/feeder/jarak":
-//                                    textView1.setText(mqttMessage.toString());
-//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+                    case "USW1000001/feeder/persen":
+                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+
+                        Log.d("jaakkkk", "= " +pDefault.toString());
+                        if (pDefault == 10){
+                            pDefault = 100;
+                        } else if (pDefault == 9){
+                            pDefault = 90;
+                        } else if (pDefault == 8){
+                            pDefault = 80;
+                        } else if (pDefault == 7){
+                            pDefault = 70;
+                        } else if (pDefault == 6){
+                            pDefault = 60;
+                        } else if (pDefault == 5) {
+                            pDefault = 50;
+                        } else if (pDefault == 4){
+                            pDefault = 40;
+                        } else if (pDefault == 3){
+                            pDefault = 30;
+                        } else if (pDefault == 2){
+                            pDefault = 20;
+                        } else if (pDefault == 1){
+                            pDefault = 10;
+                        } else if (pDefault == 11) {
+                            pDefault = 100;
+                        }
+
+                        txtProgress.setText(pDefault + "%");
+
                         Log.d("pddddd", mqttMessage.toString());
                         new Thread(new Runnable() {
                             @Override
@@ -859,7 +888,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                                         @Override
                                         public void run() {
                                             progressBar.setProgress(pStatus);
-                                            txtProgress.setText(pStatus + "");
                                         }
                                     });
                                     try {
@@ -871,11 +899,10 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                                 }
                             }
                         }).start();
+
                         break;
 
                     case "USW1000001/feeder/pakan":
-//                                    textView1.setText(mqttMessage.toString());
-//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
                         Log.d("pddddd", mqttMessage.toString());
                         if (mqttMessage.toString().equals("HIGH")){
                             txt_status_pakan.setText("Penuh");
@@ -883,8 +910,28 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                             txt_status_pakan.setText("Medium");
                         } else if (mqttMessage.toString().equals("LOW")){
                             txt_status_pakan.setText("Sedikit");
+                        } else if (mqttMessage.toString().equals("EMPTY")){
+                            txt_status_pakan.setText("Habis");
                         }
 //                        txt_status_pakan.setText(mqttMessage.toString());
+                        break;
+
+                    case "USW1000001/feeder/time":
+//                                    textView1.setText(mqttMessage.toString());
+//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+                        Log.d("pddddd", mqttMessage.toString());
+
+                        String dtStart = mqttMessage.toString();
+                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                        try {
+                            Date time_mqtt = format.parse(dtStart);
+                            Log.d("rtccc", time_mqtt.toString());
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        txt_time.setText(mqttMessage.toString());
+
                         break;
 
                     default:

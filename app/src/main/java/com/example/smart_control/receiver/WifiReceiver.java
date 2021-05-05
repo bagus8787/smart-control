@@ -8,9 +8,12 @@ import android.net.wifi.WifiManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.smart_control.R;
 import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +22,12 @@ public class WifiReceiver extends BroadcastReceiver {
     WifiManager wifiManager;
     StringBuilder sb;
     ListView wifiDeviceList;
+    SearchableSpinner spinner_wifi;
 
-    public WifiReceiver(WifiManager wifiManager, ListView wifiDeviceList) {
+    public WifiReceiver(WifiManager wifiManager, ListView wifiDeviceList, SearchableSpinner spinner_wifi) {
         this.wifiManager = wifiManager;
         this.wifiDeviceList = wifiDeviceList;
+        this.spinner_wifi = spinner_wifi;
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -37,17 +42,15 @@ public class WifiReceiver extends BroadcastReceiver {
             }
 
 //            Toast.makeText(context, sb, Toast.LENGTH_SHORT).show();
+//            ListWifi
             ArrayAdapter arrayAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, deviceList.toArray());
             wifiDeviceList.setAdapter(arrayAdapter);
 
-//            wifiDeviceList.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-////                    Intent intent = new Intent(context, HomeFeederActivity.class);
-////                    context.startService(intent);
-//
-//                }
-//            });
+//            Spinner wifi
+            ArrayAdapter spinerAdapter = new ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line, deviceList.toArray());
+            spinerAdapter.setDropDownViewResource(R.layout.list_item_wifi);
+            spinner_wifi.setTitle("Pilih WiFi");
+            spinner_wifi.setAdapter(spinerAdapter);
         }
     }
 }
