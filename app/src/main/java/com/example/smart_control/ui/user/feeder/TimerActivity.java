@@ -42,7 +42,11 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.List;
@@ -266,7 +270,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
                     }
                 });
-
+                finish();
                 break;
         }
 
@@ -288,10 +292,11 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                     context, mqttHelper.serverUri.toString(), user, memPer);
             Log.d("clientt", client.toString());
 
+            mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
+            mDialog.show();
+
             try {
-                mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
                 mDialog.setIndeterminate(true);
-                mDialog.show();
 
                 client.connect(null, new IMqttActionListener() {
                     @Override
@@ -336,19 +341,19 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             );
         }
 
-        SaveToDb(time);
+        SaveToDb(time, "Online");
 
-        Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
-//        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+        Toast.makeText(this, "Timer berhasil di set", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
     }
 
     private void setOfflineAlarm() {
         Log.d("dddddd", time);
 
-        SaveToDb(time);
+        SaveToDb(time, "Offline");
 
-        Toast.makeText(this, "Jadwal berhasil di set", Toast.LENGTH_LONG).show();
-//        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
+        Toast.makeText(this, "Timer berhasil di set", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(TimerActivity.this, HomeFeederActivity.class));
     }
 
     @Override
@@ -431,24 +436,27 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    public void SaveToDb(String timee){
-        Log.d("timeek" , "= " + timee);
+    public void SaveToDb(String timee, String status){
 
-        Call<String> addAlarm = apiInterface.addAlarm(
-                timee,
-                Integer.parseInt(txt_count.getText().toString()),
-                sharedPrefManager.getSpSecretKey());
-        addAlarm.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+        if (status == "Offline"){
+            Call<String> addAlarm = apiInterface.addAlarm(
+                    timee,
+                    Integer.parseInt(txt_count.getText().toString()),
+                    sharedPrefManager.getSpSecretKey());
+            addAlarm.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
 //                Log.d("respon_Add" , "=" + response.body().toString());
-            }
+                }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        }
+
+        Log.d("timeek" , "= " + timee);
 
         AlarmModel db_model = new AlarmModel();
         db_model.setName("adadasd");
@@ -462,6 +470,17 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public boolean isInternetAvailable() {
+//        try {
+//            int timeoutMs = 1000;
+//            Socket sock = new Socket();
+//            SocketAddress sockaddr = new InetSocketAddress("178.128.217.111", 1883);
+//
+//            sock.connect(sockaddr, timeoutMs);
+//            sock.close();
+//
+//            return true;
+//        } catch (IOException e) { return false; }
+
         try {
             InetAddress address = InetAddress.getByName("www.google.com");
             return !address.equals("");

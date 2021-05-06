@@ -66,6 +66,7 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
         });
     }
 
+
     //Kumpulan Konfigurasi Untuk Menghubungkan dengan Firebase
     private void FirebaseConnect(){
         //Statement
@@ -87,7 +88,7 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 
                 if(firebaseAuth.getCurrentUser() != null){
 
-                    if (sharedPrefManager.getSpSsid() == ""){
+                    if(sharedPrefManager.getSpSecretKey() == ""){
                         startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
                         finish();
                     } else {

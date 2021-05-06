@@ -63,6 +63,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_SSID, "");
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, "");
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, "");
 
                 sharedPrefManager.setSpDeviceSsid("");
                 startActivity(new Intent(SettingActivity.this, LoginFirebaseActivity.class));

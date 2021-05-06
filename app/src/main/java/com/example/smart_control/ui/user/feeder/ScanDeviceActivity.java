@@ -66,15 +66,14 @@ public class ScanDeviceActivity extends AppCompatActivity {
 //                Log.d("secret_key", secret_key);
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, String.valueOf(device_id));
-
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, String.valueOf(device_id));
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, secret_key);
 
                 Log.d("secret_key", sharedPrefManager.getSpIdDevice());
 
                 Toast.makeText(this, device_id, Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, AddWifiActivity.class)
-                .putExtra("name", device_id));
+                .putExtra("name", device_id)
+                .putExtra("secret_key", secret_key));
 
 //                Log.d("SHAREDSSID", "=" + sharedPrefManager.getSpDeviceSsid());
             }

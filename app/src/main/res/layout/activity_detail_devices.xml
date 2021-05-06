@@ -75,18 +75,21 @@
             android:orientation="vertical">
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Jam"
                 android:textStyle="bold"/>
 
             <EditText
+                android:visibility="gone"
                 android:id="@+id/ip_time_before"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:editable="false" />
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Jumlah takaran"
@@ -94,6 +97,7 @@
 
             <EditText
                 android:id="@+id/ip_count"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:editable="false"/>
@@ -114,11 +118,14 @@
                 android:id="@+id/ip_count_new"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:hint="0"
+                android:layout_marginBottom="10dp"/>
 
             <Button
-                android:layout_width="match_parent"
+                android:id="@+id/btn_update_timer"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/colorPrimaryDark"
                 android:textColor="@color/colorWhite"

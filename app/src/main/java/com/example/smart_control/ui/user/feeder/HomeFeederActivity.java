@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -47,6 +48,7 @@ import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.WifiActivity;
 import com.example.smart_control.repository.AlarmRepository;
+import com.example.smart_control.services.CekConnectionService;
 import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 import com.example.smart_control.viewmodel.AlarmViewModel;
@@ -78,6 +80,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -106,12 +111,12 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     private static String AUTH_KEY = "key=AAAAPZwfg1o:APA91bFyoAPcGEvSiGjIlw7upmN7C0tvliqdatgybhwRND6MLlcgxVncaRNQLyrAd-7pSYDHZQoM1ofQlWceCYbCmXhTH6GIIUluNwU7n26QrJ0-47bhRUvEP0foHmr0lKGx9sU94BwQ";
 
-//    private static String AUTH_KEY;
     LinearLayout ly_timer, ly_wifi, ly_img22;
     TextView mTextView, txt_nama, txt_status_device, txt_status_pakan, txt_time;
     Button btn_beri_pakan;
     ImageView img_setting, img_notif, img_delete_alarm;
     RecyclerView rv_time_alarm;
+    SwipeRefreshLayout ly_refresh;
 
     AdapterListAlarm adapterListAlarm;
     AlarmRepository alarmRepository;
@@ -128,6 +133,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     private String token;
     String m_Text;
+    String ConnectionStatus = "";
     Context context;
     ProgressDialog mDialog;
 
@@ -139,9 +145,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     final long period = 3000;
 
     private Handler handler = new Handler();
+//    Handler mHandler = new Handler();
+    boolean isRunning = true;
     MqttHelper mqttHelper;
-
-    String a = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -269,7 +275,29 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         }
 
         //Cek Connection
+//        cek_connection();
+
+        ly_refresh = findViewById(R.id.ly_refresh);
+        // Mengeset properti warna yang berputar pada SwipeRefreshLayout
+        ly_refresh.setColorSchemeResources(R.color.colorWhite,R.color.colorPrimary);
+        ly_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Handler untuk menjalankan jeda selama 5 detik
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        // Berhenti berputar/refreshing
+                        ly_refresh.setRefreshing(false);
+                        // fungsi-fungsi lain yang dijalankan saat refresh berhenti
+                        cek_connection();
+                    }
+                }, 5000);
+            }
+        });
+
         cek_connection();
+
+        Log.d("qppqpqpqpq", "= " + ConnectionStatus);
     }
 
     @Override
@@ -503,30 +531,18 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
+                Log.d("connectccc", String.valueOf(isInternetAvailable()));
                 if (isInternetAvailable() == false){
                     OfflineStatusPakan();
+//                    mDialog.dismiss();
                 } else {
                     OnlineStatusPakan();
+//                    mDialog.dismiss();
                 }
                 handler.postDelayed(this, 1000);
             }
         };
         runnable.run();
-
-//        new Timer().schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                // do your task here
-//                if (isInternetAvailable() == false){
-////                    txt_status_device.setText("Device : Offline");
-//                    OfflineStatusPakan();
-//                } else {
-////                    txt_status_device.setText("Device : Online");
-//                    OnlineStatusPakan();
-//                }
-//            }
-//        }, 1, 10000);
-
     }
 
     public void OnlineFeeder(){
@@ -543,11 +559,11 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             final MqttAndroidClient client = new MqttAndroidClient(
                     context, mqttHelper.serverUri.toString(), user, memPer);
             Log.d("clientt", client.toString());
-            try {
-                mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
-                mDialog.setIndeterminate(true);
-                mDialog.show();
+            mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
+            mDialog.setIndeterminate(true);
+            mDialog.show();
 
+            try {
                 client.connect(null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken mqttToken) {
@@ -559,14 +575,13 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                         mqttMessage.setRetained(false);
                         try {
                             client.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", mqttMessage);
-                            Log.i("OnlineLog", "Message published");
-
+                            Log.i("OnlineLog", "Message published= " + mqttMessage.toString());
+                            mDialog.dismiss();
+                            Toast.makeText(context,"Pemberian pakan kucing berhasil", Toast.LENGTH_LONG).show();
                         } catch (MqttPersistenceException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
 
                         } catch (MqttException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -578,7 +593,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
                     }
                 });
-                mDialog.dismiss();
 
             } catch (MqttException e) {
                 e.printStackTrace();
@@ -693,8 +707,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void OfflineFeeder(){
-//        m_Text = input.getText().toString();
-
         Call<String> beriPakan = apiInterface.beriPakan(
                 "1"
         );
@@ -709,7 +721,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
             }
         });
-
 //        AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
 //        builder.setTitle("Jumlah");
 //        View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
@@ -756,7 +767,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
         txt_time.setText(currentTime.toString());
 
-        String status = "Device : Offline";
+        String status = "Device : Tersambung (Offline)";
         txt_status_device.setText(status);
 
         Call<StatusPakan> status_pakan = apiInterface.statusPakan();
@@ -828,17 +839,30 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void OnlineStatusPakan(){
-        String status = "Device : Online";
-        txt_status_device.setText(status);
-
         mqttHelper.mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
-                Log.w("Debug","Connected");
+                if (b=true){
+                    String status = "Device : Tersambung (Online)";
+                    txt_status_device.setText(status);
+                    Log.w("DebugStatus","Connected= " + b);
+                } else {
+                    String status = "Device : Tidak tersambung";
+                    txt_status_device.setText(status);
+                    Log.w("DebugStatus","Connected= " + b);
+                }
             }
 
             @Override
             public void connectionLost(Throwable throwable) {
+                Log.w("DebugStatus","Connected= " + throwable);
+                if (throwable.toString() != "Connection lost (32109) - java.io.EOFException"){
+                    String status = "Device : Tersambung (Online)";
+//                    txt_status_device.setText(status);
+                } else {
+                    String status = "Device : Tidak tersambung";
+//                    txt_status_device.setText(status);
+                }
             }
 
             @Override
@@ -959,6 +983,61 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     }
 
     public boolean isInternetAvailable() {
+//        try {
+//            int timeoutMs = 0;
+//            Socket sock = new Socket();
+//            SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 43);
+//
+//            sock.connect(sockaddr, timeoutMs);
+//            sock.close();
+//
+//            return true;
+//        } catch (IOException e) { return false; }
+
+//        Runtime runtime = Runtime.getRuntime();
+//        try {
+//            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+//            int     exitValue = ipProcess.waitFor();
+//            return (exitValue == 0);
+//        }
+//        catch (IOException e)          { e.printStackTrace(); }
+//        catch (InterruptedException e) { e.printStackTrace(); }
+//        return false;
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                // TODO Auto-generated method stub
+//                while (isRunning) {
+//                    try {
+//                        Thread.sleep(10000);
+//                        handler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    int timeoutMs = 0;
+//                                    Socket sock = new Socket();
+//                                    SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 43);
+//
+//                                    sock.connect(sockaddr, timeoutMs);
+//                                    sock.close();
+//
+////                                    return true;
+//                                    ConnectionStatus = "connect";
+//                                } catch (IOException e) {
+//                                    ConnectionStatus = "disconnect";
+//
+////                                    return false;
+//                                }
+//                            }
+//                        });
+//                    } catch (Exception e) {
+//                        // TODO: handle exception
+//                    }
+//                }
+//            }
+//        }).start();
+
         try {
             InetAddress address = InetAddress.getByName("www.google.com");
             return !address.equals("");

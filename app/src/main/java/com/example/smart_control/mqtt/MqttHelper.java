@@ -21,6 +21,7 @@ public class MqttHelper {
     public MqttAndroidClient mqttAndroidClient;
 
     public String serverUri = "tcp://178.128.217.111:1883";
+    public String serverIp = "178.128.217.111";
 
     String clientId = "";
     final String subscriptionTopic = "USW1000001/#/#";
@@ -127,24 +128,24 @@ public class MqttHelper {
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setPayload("{count: 4, secret_key: USW1000001-d15b468e-1e87-4b96-9686-603401ea691e}".getBytes());
 
-        try {
-            mqttAndroidClient.publish("USW1000001/control/beri_pakan", "{count: 4, secret_key: 'USW1000001-d15b468e-1e87-4b96-9686-603401ea691e'}".getBytes(), 0, false);
-            Toast.makeText(context,"Published Messageeee", Toast.LENGTH_SHORT).show();
-        } catch ( MqttException e) {
-            e.printStackTrace();
-        }
-
-        MqttMessage message = new MqttMessage();
-        message.setPayload("{count: 4, secret_key: 'USW1000001-d15b468e-1e87-4b96-9686-603401ea691e'}".getBytes());
-        try {
-            Log.d("mesage", message.toString());
-
-            mqttAndroidClient.publish("USW1000001/control/beri_pakan", message);
-            Toast.makeText(context,"Published Messageeeerrrrrrr", Toast.LENGTH_SHORT).show();
-
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            mqttAndroidClient.publish("USW1000001/control/beri_pakan", "{count: 4, secret_key: 'USW1000001-d15b468e-1e87-4b96-9686-603401ea691e'}".getBytes(), 0, false);
+//            Toast.makeText(context,"Published Messageeee", Toast.LENGTH_SHORT).show();
+//        } catch ( MqttException e) {
+//            e.printStackTrace();
+//        }
+//
+//        MqttMessage message = new MqttMessage();
+//        message.setPayload("{count: 4, secret_key: 'USW1000001-d15b468e-1e87-4b96-9686-603401ea691e'}".getBytes());
+//        try {
+//            Log.d("mesage", message.toString());
+//
+//            mqttAndroidClient.publish("USW1000001/control/beri_pakan", message);
+//            Toast.makeText(context,"Published Messageeeerrrrrrr", Toast.LENGTH_SHORT).show();
+//
+//        } catch (MqttException e) {
+//            e.printStackTrace();
+//        }
 
 //        String topic = "event";
 //        String message = "the payload";
