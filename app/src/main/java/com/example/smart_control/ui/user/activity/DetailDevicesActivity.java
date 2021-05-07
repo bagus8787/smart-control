@@ -21,6 +21,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.smart_control.R;
+import com.example.smart_control.handler.DatabaseHandler;
+import com.example.smart_control.model.AlarmModel;
 import com.example.smart_control.mqtt.MqttHelper;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
@@ -62,6 +64,8 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
     SharedPrefManager sharedPrefManager;
     ApiInterface apiInterface;
     MqttHelper mqttHelper;
+    DatabaseHandler db;
+    AlarmModel alarmModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +76,15 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
         sharedPrefManager = new SharedPrefManager(context);
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
         mqttHelper = new MqttHelper(context);
-        mDialog = new ProgressDialog(context);
+        mDialog = new ProgressDialog(DetailDevicesActivity.this);
+        alarmModel = new AlarmModel();
+        db = DatabaseHandler.getInstance(context);
 
         id  = getIntent().getStringExtra("IT_ID");
         time  = getIntent().getStringExtra("IT_TIME");
         count  = getIntent().getStringExtra("IT_COUNT");
+
+        Log.d("idneyyayaa", "== " + id);
 
         ip_time_before = findViewById(R.id.ip_time_before);
         ip_count = findViewById(R.id.ip_count);
@@ -197,18 +205,22 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setOfflineAlarm(){
-//        mDialog.show();
-//        mDialog.setMessage("Sedang memperbarui jadwal pakan. Mohon tunggu sebentar");
+        mDialog.show();
+        mDialog.setMessage("Sedang memperbarui jadwal pakan. Mohon tunggu sebentar...");
+        Integer count_new = Integer.valueOf(ip_count_new.getText().toString());
+
         Call<String> edit = apiInterface.editAlarm(
                 time_now,
-                Integer.parseInt(ip_count_new.getText().toString()),
+                count_new,
                 time,
                 sharedPrefManager.getSpSecretKey());
+
+        Log.d("offlineEditAlarm", edit.toString());
         edit.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 //                Log.d("respon_Add" , "=" + response.body().toString());
-//                mDialog.dismiss();
+                mDialog.dismiss();
                 Toast.makeText(context, "Timer berhasil di perbarui", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(context, HomeFeederActivity.class));
             }
@@ -218,72 +230,74 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
 
             }
         });
+
+        alarmModel.setId(Integer.parseInt(id));
+        alarmModel.setName("adadasd");
+        alarmModel.setTall("casca");
+        alarmModel.setTime(time_now);
+        alarmModel.setCount(ip_count_new.getText().toString());
+        alarmModel.setOld_time(time);
+
+        db.updateAlarm(alarmModel);
+
+        Log.d("dbbbbb", String.valueOf(alarmModel.getId() + "==" + alarmModel.getTime() + db.updateAlarm(alarmModel)));
+        Toast.makeText(this, "Timer berhasil di perbarui", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(context, HomeFeederActivity.class));
     }
     private void setOnlineAlarm() {
         Log.d("timee", time_now);
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
-        String json = "{\"time\" : \""+ time_now +"\" ,\"count\":"+ Integer.parseInt(ip_count_new.getText().toString()) +", \"old_time\":"+ time +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
+
+        String json = "{\"time\":\""+ time_now +"\",\"count\":"+Integer.parseInt(ip_count_new.getText().toString())+",\"old_time\":\""+ time +"\",\"secret_key\":"+sharedPrefManager.getSpSecretKey()+"}";
         String user = "";
+
         try {
-            JSONObject obj = new JSONObject(json);
-            MqttHelper mqttHelperOnline;
-            mqttHelperOnline = new MqttHelper(context);
-            mqttHelperOnline.serverUri.toString();
-
-            MemoryPersistence memPer = new MemoryPersistence();
-            final MqttAndroidClient client = new MqttAndroidClient(
-                    context, mqttHelper.serverUri.toString(), user, memPer);
-            Log.d("clientt", client.toString());
-
-            mDialog.setMessage("Sedang memperbarui jadwal pakan. Mohon tunggu sebentar");
             mDialog.show();
-
-            try {
-                mDialog.setIndeterminate(true);
-                client.connect(null, new IMqttActionListener() {
+            mDialog.setMessage("Sedang memperbarui jadwal pakan. Mohon tunggu sebentar...");
+            Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
+            if (mqttHelper.mqttAndroidClient.isConnected() == false){
+                mqttHelper.mqttAndroidClient.connect();
+                mDialog.dismiss();
+                Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+                return;
+            } else {
+                MqttMessage message = new MqttMessage();
+                message.setPayload(json.getBytes());
+                message.setQos(0);
+                mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/timer/edit", message,null, new IMqttActionListener() {
                     @Override
-                    public void onSuccess(IMqttToken mqttToken) {
-                        Log.i("OnlineLog", "Client connected");
-
-                        MqttMessage mqttMessage = new MqttMessage();
-                        mqttMessage.setPayload(json.getBytes());
-                        mqttMessage.setQos(2);
-                        mqttMessage.setRetained(false);
-                        try {
-                            client.publish(sharedPrefManager.getSpIdDevice() + "/control/timer/edit", mqttMessage);
-                            Log.i("OnlineLog", "Message published");
-
-                        } catch (MqttPersistenceException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-
-                        } catch (MqttException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.i("OnlineLog", "Message published= " + message.toString());
+                        mDialog.dismiss();
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // change image
+//                            }
+//
+//                        }, 1000); // 5000ms delay
                     }
 
                     @Override
-                    public void onFailure(IMqttToken arg0, Throwable arg1) {
-                        // TODO Auto-generated method stub
-                        Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
-
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.i("TAGGGGGGGG", "publish failed!") ;
                     }
                 });
-                mDialog.dismiss();
-
-            } catch (MqttException e) {
-                e.printStackTrace();
             }
-            Log.d("MyAppmmm", obj.toString());
-            Log.d("phonetypevalue", obj.getString("phonetype"));
 
-        } catch (Throwable tx) {
-            Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
-            );
+        } catch (MqttException e) {
+            Log.e("TAG", e.toString());
+            e.printStackTrace();
         }
 
-//        SaveToDb(time, "Online");
+        alarmModel.setId(Integer.parseInt(id));
+        alarmModel.setName("adadasd");
+        alarmModel.setTall("casca");
+        alarmModel.setTime(time_now);
+        alarmModel.setCount(ip_count_new.getText().toString());
+        alarmModel.setOld_time(time);
+
+        db.updateAlarm(alarmModel);
 
         Toast.makeText(this, "Timer berhasil di perbarui", Toast.LENGTH_LONG).show();
         startActivity(new Intent(context, HomeFeederActivity.class));

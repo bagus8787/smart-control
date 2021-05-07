@@ -39,7 +39,7 @@ public class ScanDeviceActivity extends AppCompatActivity {
 
 //        Set WIFI to enabled
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        mWifiManager.setWifiEnabled(false);
+//        mWifiManager.setWifiEnabled(false);
 
         intentIntegrator = new IntentIntegrator(ScanDeviceActivity.this);
         intentIntegrator.setCaptureActivity(Potrait.class);

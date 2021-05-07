@@ -40,6 +40,7 @@ import com.example.smart_control.mqtt.MqttTesActivity;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.WifiReceiver;
+import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
@@ -131,7 +132,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
         btn_konek.setOnClickListener(this);
 
-        mWifiManager.setWifiEnabled(true);
+//        mWifiManager.setWifiEnabled(true);
 
         WifiManager wifiManager =
                 (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -444,8 +445,8 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                     device_config.enqueue(new Callback() {
                         @Override
                         public void onResponse(Call call, Response response) {
-                            Log.d("responsee", response.toString());
-
+                            Log.d("responsee", "= " + response.toString());
+                            Log.d("responsee", "= " + "naannanannana");
                         }
 
                         @Override
@@ -454,50 +455,77 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     });
 
-//                    mWifiManager.setWifiEnabled(false);
-
                     int SPLASH_DISPLAY_LENGHT = 5000;
 
+                    Log.d("internettt", String.valueOf(internetConnected()));
+
                     if (internetConnected()==true){
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run() {
-                                /* Create an Intent that will start the Menu-Activity. */
-                                Intent mainIntent = new Intent(AddWifiActivity.this,HomeFeederActivity.class);
-                                startActivity(mainIntent);
-                                finish();
-                            }
-                        }, SPLASH_DISPLAY_LENGHT);
+                        Log.d("lolooo", "connection true");
+//                        new Handler().postDelayed(new Runnable(){
+//                            @Override
+//                            public void run() {
+//                                /* Create an Intent that will start the Menu-Activity. */
+//                                Intent mainIntent = new Intent(AddWifiActivity.this,HomeFeederActivity.class);
+//                                startActivity(mainIntent);
+//                                finish();
+//                            }
+//                        }, SPLASH_DISPLAY_LENGHT);
                     } else {
+//                        mWifiManager.setWifiEnabled(true);
 
-                        mWifiManager.setWifiEnabled(true);
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-                            for( WifiConfiguration i : list ) {
-                                Log.d(LOG, SSID_WIFI);
-                                if(i.SSID != null && i.SSID.equals("\"" + SSID_WIFI + "\"")) {
-                                    mWifiManager.disconnect();
-                                    mWifiManager.enableNetwork(i.networkId, true);
-                                    mWifiManager.reconnect();
+                        if (sharedPrefManager.getSPSudahLogin() == true) {
+                            if (ActivityCompat.checkSelfPermission(AddWifiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
+                                for (WifiConfiguration i : list) {
+                                    Log.d(LOG, SSID_WIFI);
+                                    if (i.SSID != null && i.SSID.equals("\"" + SSID_WIFI + "\"")) {
+                                        mWifiManager.disconnect();
+                                        mWifiManager.enableNetwork(i.networkId, true);
+                                        mWifiManager.reconnect();
 
-                                    new Handler().postDelayed(new Runnable(){
-                                        @Override
-                                        public void run() {
-                                            /* Create an Intent that will start the Menu-Activity. */
-                                            Intent mainIntent = new Intent(AddWifiActivity.this,HomeFeederActivity.class);
-                                            startActivity(mainIntent);
-                                            progressDialog.dismiss();
-                                            finish();
-                                        }
-                                    }, SPLASH_DISPLAY_LENGHT);
-
+                                        Intent mainIntent = new Intent(AddWifiActivity.this, HomeFeederActivity.class);
+                                        startActivity(mainIntent);
+                                    }
                                 }
                             }
+                            progressDialog.dismiss();
+                            break;
+                        } else {
+                            Intent mainIntent = new Intent(AddWifiActivity.this, LoginFirebaseActivity.class);
+                            startActivity(mainIntent);
+                            progressDialog.dismiss();
+                            break;
+                        }
                         }
 
+//                        if (ActivityCompat.checkSelfPermission(AddWifiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                            List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
+//                            for (WifiConfiguration i : list) {
+//                                Log.d(LOG, SSID_WIFI);
+//                                if (i.SSID != null && i.SSID.equals("\"" + SSID_WIFI + "\"")) {
+//                                    mWifiManager.disconnect();
+//                                    mWifiManager.enableNetwork(i.networkId, true);
+//                                    mWifiManager.reconnect();
+//
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            /* Create an Intent that will start the Menu-Activity. */
+//                                            Intent mainIntent = new Intent(AddWifiActivity.this, HomeFeederActivity.class);
+//                                            startActivity(mainIntent);
+//                                            progressDialog.dismiss();
+//                                            finish();
+//                                        }
+//                                    }, SPLASH_DISPLAY_LENGHT);
+//
+//                                }
+//                            }
+//                        }
+//                    }
+
+//                    mWifiManager.setWifiEnabled(false);
                     }
 
-                }
                 break;
 
         }

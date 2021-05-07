@@ -546,7 +546,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     public void OnlineFeeder(){
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
-        String json = "{\"count\":"+ 1 +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
+        String json = "{\"count\":"+1+",\"secret_key\":"+sharedPrefManager.getSpSecretKey()+"}";
         String user = "";
 
         mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
@@ -744,11 +744,11 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             public void connectComplete(boolean b, String s) {
                 if (b=true){
                     String status = "Device : Tersambung (Online)";
-                    txt_status_device.setText(status);
+//                    txt_status_device.setText(status);
                     Log.w("DebugStatus","Connected= " + b);
                 } else {
                     String status = "Device : Tidak tersambung";
-                    txt_status_device.setText(status);
+//                    txt_status_device.setText(status);
                     Log.w("DebugStatus","Connected= " + b);
                 }
             }
@@ -758,10 +758,10 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 Log.w("DebugStatus","Connected= " + throwable);
                 if (throwable.toString() != "Connection lost (32109) - java.io.EOFException"){
                     String status = "Device : Tersambung (Online)";
-//                    txt_status_device.setText(status);
+                    txt_status_device.setText(status);
                 } else {
                     String status = "Device : Tidak tersambung";
-//                    txt_status_device.setText(status);
+                    txt_status_device.setText(status);
                 }
             }
 
@@ -770,12 +770,18 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 Log.w("Debugss",mqttMessage.toString());
                 Log.w("topicss", topic.toString());
 
-                String feeder_topic_jarak = sharedPrefManager.getSpIdDevice() + "/feeder/jarak";
+                Log.d("federraaaar", sharedPrefManager.getSpIdDevice());
+
+                Log.d("federraaaarssss", topic.toString() + "|| " + mqttMessage.toString());
+
+                String feeder_topic_jarak = sharedPrefManager.getSpIdDevice()+"/feeder/status";
                 Log.d("federrr", feeder_topic_jarak);
+
+                String status = "Device : Tersambung (Online)";
+                txt_status_device.setText(status);
                 switch (topic.toString()){
                     case "USW1000001/feeder/persen":
                         pDefault = Integer.parseInt(String.valueOf(mqttMessage));
-
                         Log.d("jaakkkk", "= " +pDefault.toString());
                         if (pDefault == 10){
                             pDefault = 100;
@@ -886,7 +892,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     public void onBackPressed(){
 //        finish();
         new AlertDialog.Builder(this)
-                .setMessage("Apakah anda mau keluar dari Aplikasi Pro Desa?")
+                .setMessage("Apakah anda mau keluar dari Aplikasi Feeder ?")
                 .setCancelable(false)
                 .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

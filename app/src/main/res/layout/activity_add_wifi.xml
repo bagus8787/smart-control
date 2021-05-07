@@ -82,7 +82,7 @@
             android:textAlignment="center"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="Masukkan Wifi dan Password"/>
+            android:text="Pilih Wifi dan masukkan Password"/>
 
         <LinearLayout
             android:layout_width="match_parent"

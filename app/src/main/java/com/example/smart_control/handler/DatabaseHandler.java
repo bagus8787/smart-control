@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.smart_control.model.AlarmModel;
 
@@ -180,7 +181,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //Update Data
-    public int updateContact (AlarmModel alarmModel){
+    public int updateAlarm (AlarmModel alarmModel){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -190,11 +191,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_COUNT, alarmModel.getCount());
         values.put(KEY_OLD_TIME, alarmModel.getOld_time());
 
+        Log.d("idnyaaaaa", String.valueOf(alarmModel.getId()));
+
         //Update
         return db.update(TABLE_TALL, values, KEY_ID + " = ? ",
                 new String[]{
                         String.valueOf(alarmModel.getId())
                 });
+
     }
 
     //Delete Data

@@ -279,7 +279,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     private void setOnlineAlarm(String token) {
         Log.d("timee", time);
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
-        String json = "{\"time\" : \""+ time +"\" ,\"count\":"+ Integer.parseInt(txt_count.getText().toString()) +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
+        String json = "{\"time\":\""+ time +"\",\"count\":"+Integer.parseInt(txt_count.getText().toString())+",\"secret_key\":"+sharedPrefManager.getSpSecretKey()+"}";
         String user = "";
         try {
             JSONObject obj = new JSONObject(json);

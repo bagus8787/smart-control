@@ -96,6 +96,7 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 
                         sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, firebaseAuth.getCurrentUser().getEmail());
                         sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, firebaseAuth.getCurrentUser().getDisplayName());
+                        sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN,true);
 //                        firebaseAuth.getCurrentUser().getEmail();
                         startActivity(new Intent(LoginFirebaseActivity.this, HomeFeederActivity.class));
 //                        finish();

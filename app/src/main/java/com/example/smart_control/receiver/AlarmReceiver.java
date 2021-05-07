@@ -68,14 +68,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         JSONObject jNotification = new JSONObject();
         JSONObject jData = new JSONObject();
         try {
-            jNotification.put("title", "Google I/O 2016");
-            jNotification.put("body", "Firebase Cloud Messaging (App)");
+            jNotification.put("title", "Alarm pakan success");
+            jNotification.put("body", "Alarm pakan success");
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
             jNotification.put("click_action", "OPEN_ACTIVITY_1");
             jNotification.put("icon", "ic_notification");
 
-            jData.put("picture", "https://miro.medium.com/max/1400/1*QyVPcBbT_jENl8TGblk52w.png");
+//            jData.put("picture", "https://miro.medium.com/max/1400/1*QyVPcBbT_jENl8TGblk52w.png");
 
             switch(type) {
                 case "tokens":

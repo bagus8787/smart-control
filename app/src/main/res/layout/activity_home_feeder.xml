@@ -572,7 +572,6 @@
                     android:textStyle="bold" />
 
                 <ImageView
-                    android:visibility="invisible"
                     android:id="@+id/img_delete_alarm"
                     android:layout_width="25dp"
                     android:layout_height="25dp"

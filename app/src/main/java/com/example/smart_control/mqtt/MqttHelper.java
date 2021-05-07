@@ -24,7 +24,7 @@ public class MqttHelper {
     public String serverIp = "178.128.217.111";
 
     String clientId = "";
-    final String subscriptionTopic = "USW1000001/#/#";
+    final String subscriptionTopic = "USW1000001/feeder/#";
 
     final String username = "";
     final String password = "";

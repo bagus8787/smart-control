@@ -42,7 +42,7 @@
                 android:layout_marginEnd="0dp"
                 android:layout_toStartOf="@+id/img_edit"
                 android:layout_toEndOf="@+id/img_back"
-                android:text="Timer"
+                android:text="Edit Timer Pakan"
                 android:textColor="@android:color/white"
                 android:textAlignment="center"
                 android:textSize="16sp"
