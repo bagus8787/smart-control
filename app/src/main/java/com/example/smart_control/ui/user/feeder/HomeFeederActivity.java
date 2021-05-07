@@ -97,6 +97,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Connection;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -334,10 +335,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 if (isInternetAvailable() == false){
                     OfflineFeeder();
                 } else {
-//                    mDialog = new ProgressDialog(context);
                     OnlineFeeder();
                 }
-
                 break;
 
             case R.id.img_setting:
@@ -549,60 +548,47 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
         String json = "{\"count\":"+ 1 +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
         String user = "";
-        try {
-            JSONObject obj = new JSONObject(json);
-            MqttHelper mqttHelperOnline;
-            mqttHelperOnline = new MqttHelper(context);
-            mqttHelperOnline.serverUri.toString();
 
-            MemoryPersistence memPer = new MemoryPersistence();
-            final MqttAndroidClient client = new MqttAndroidClient(
-                    context, mqttHelper.serverUri.toString(), user, memPer);
-            Log.d("clientt", client.toString());
-            mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
-            mDialog.setIndeterminate(true);
+        mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
+        mDialog.setIndeterminate(true);
+
+        try {
             mDialog.show();
 
-            try {
-                client.connect(null, new IMqttActionListener() {
+            Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
+            if (mqttHelper.mqttAndroidClient.isConnected() == false){
+                mqttHelper.mqttAndroidClient.connect();
+                mDialog.dismiss();
+                Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+                return;
+            } else {
+                MqttMessage message = new MqttMessage();
+                message.setPayload(json.getBytes());
+                message.setQos(0);
+                mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", message,null, new IMqttActionListener() {
                     @Override
-                    public void onSuccess(IMqttToken mqttToken) {
-                        Log.i("OnlineLog", "Client connected");
-
-                        MqttMessage mqttMessage = new MqttMessage();
-                        mqttMessage.setPayload(json.getBytes());
-                        mqttMessage.setQos(2);
-                        mqttMessage.setRetained(false);
-                        try {
-                            client.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", mqttMessage);
-                            Log.i("OnlineLog", "Message published= " + mqttMessage.toString());
-                            mDialog.dismiss();
-                            Toast.makeText(context,"Pemberian pakan kucing berhasil", Toast.LENGTH_LONG).show();
-                        } catch (MqttPersistenceException e) {
-                            e.printStackTrace();
-
-                        } catch (MqttException e) {
-                            e.printStackTrace();
-                        }
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.i("OnlineLog", "Message published= " + message.toString());
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // change image
+//                            }
+//
+//                        }, 1000); // 5000ms delay
                     }
 
                     @Override
-                    public void onFailure(IMqttToken arg0, Throwable arg1) {
-                        // TODO Auto-generated method stub
-                        Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
-
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.i("TAGGGGGGGG", "publish failed!") ;
                     }
                 });
-
-            } catch (MqttException e) {
-                e.printStackTrace();
+                mDialog.dismiss();
             }
-            Log.d("MyAppmmm", obj.toString());
-            Log.d("phonetypevalue", obj.getString("phonetype"));
 
-        } catch (Throwable tx) {
-            Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
-            );
+        } catch (MqttException e) {
+            Log.e("TAG", e.toString());
+            e.printStackTrace();
         }
 
         Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
@@ -618,92 +604,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-//        AlertDialog.Builder builder = new AlertDialog.Builder(HomeFeederActivity.this);
-//        builder.setTitle("Jumlah");
-//        View viewInflated = getLayoutInflater().inflate(R.layout.text_input, null);
-//        // Set up the input
-//        final EditText input = (EditText) viewInflated.findViewById(R.id.input);
-//        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-//        builder.setView(viewInflated);
-//
-//        // Set up the buttons
-//        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.dismiss();
-//                m_Text = input.getText().toString();
-//
-//                Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
-//
-//                String json = "{\"count\":"+ m_Text +", \"secret_key\":" + sharedPrefManager.getSpSecretKey() +"}";
-//                String user = "";
-//
-//                try {
-//                    JSONObject obj = new JSONObject(json);
-//                    MqttHelper mqttHelperOnline;
-//                    mqttHelperOnline = new MqttHelper(context);
-//                    mqttHelperOnline.serverUri.toString();
-//
-//                    MemoryPersistence memPer = new MemoryPersistence();
-//                    final MqttAndroidClient client = new MqttAndroidClient(
-//                            context, mqttHelper.serverUri.toString(), user, memPer);
-//                    Log.d("clientt", client.toString());
-//                    try {
-//                        client.connect(null, new IMqttActionListener() {
-//                            @Override
-//                            public void onSuccess(IMqttToken mqttToken) {
-//                                Log.i("OnlineLog", "Client connected");
-//
-//                                MqttMessage mqttMessage = new MqttMessage();
-//                                mqttMessage.setPayload(json.getBytes());
-//                                mqttMessage.setQos(2);
-//                                mqttMessage.setRetained(false);
-//                                try {
-//                                    client.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", mqttMessage);
-//                                    Log.i("OnlineLog", "Message published");
-//
-//                                } catch (MqttPersistenceException e) {
-//                                    // TODO Auto-generated catch block
-//                                    e.printStackTrace();
-//
-//                                } catch (MqttException e) {
-//                                    // TODO Auto-generated catch block
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onFailure(IMqttToken arg0, Throwable arg1) {
-//                                // TODO Auto-generated method stub
-//                                Log.i("OnlineLog", "Client connection failed: "+arg1.getMessage());
-//
-//                            }
-//                        });
-//                    } catch (MqttException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Log.d("MyAppmmm", obj.toString());
-//                    Log.d("phonetypevalue", obj.getString("phonetype"));
-//
-//                } catch (Throwable tx) {
-//                    Log.e("MyApp", "Could not parse malformed JSON: \"" + json + "\""
-//                    );
-//                }
-//                Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
-//            }
-//        });
-//        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.cancel();
-//            }
-//        });
-//
-//        builder.show();
-//
-//        Integer p = 1;
-//
-//        String a = "";
     }
 
     public void OfflineFeeder(){
@@ -982,6 +882,21 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         db_notif.addRecord(db_model);
     }
 
+    @Override
+    public void onBackPressed(){
+//        finish();
+        new AlertDialog.Builder(this)
+                .setMessage("Apakah anda mau keluar dari Aplikasi Pro Desa?")
+                .setCancelable(false)
+                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        HomeFeederActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("Tidak", null)
+                .show();
+    }
+
     public boolean isInternetAvailable() {
 //        try {
 //            int timeoutMs = 0;
@@ -1044,6 +959,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         } catch (UnknownHostException e) {
             // Log error
         }
+
         return false;
     }
 

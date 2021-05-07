@@ -10,6 +10,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -150,7 +151,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
         getCurrentSsid(getApplicationContext());
 //        startWifiConnected();
-        connectWifi(SSID_DEVICE, PSWD_DEVICE);
+//        connectWifi(SSID_DEVICE, PSWD_DEVICE);
 
         Log.d(TAG, "Connect to " + SSID_DEVICE + " : " + PSWD_DEVICE );
 
@@ -161,9 +162,9 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
         Log.d("conectedddd", String.valueOf(internetConnected()));
 
-        if (internetConnected() == true) {
-            turnOffData();
-        }
+//        if (internetConnected() == true) {
+//            turnOffData();
+//        }
     }
 
     private void connectWifiLocal(String ssidL, String passL) {
@@ -453,7 +454,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     });
 
-                    mWifiManager.setWifiEnabled(false);
+//                    mWifiManager.setWifiEnabled(false);
 
                     int SPLASH_DISPLAY_LENGHT = 5000;
 
@@ -485,6 +486,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                                             /* Create an Intent that will start the Menu-Activity. */
                                             Intent mainIntent = new Intent(AddWifiActivity.this,HomeFeederActivity.class);
                                             startActivity(mainIntent);
+                                            progressDialog.dismiss();
                                             finish();
                                         }
                                     }, SPLASH_DISPLAY_LENGHT);
@@ -525,6 +527,11 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 //        return false;
 //    }
 
+    @Override
+    public void onBackPressed(){
+        finish();
+    }
+
     public boolean localConnected(){
         Runtime runtime = Runtime.getRuntime();
         try {
@@ -549,12 +556,21 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 //            return true;
 //        } catch (IOException e) { return false; }
 
+//        try {
+//            String command = "ping -c 1 google.com";
+//            return (Runtime.getRuntime().exec(command).waitFor() == 0);
+//        } catch (Exception e) {
+//            return false;
+//        }
+
         try {
-            String command = "ping -c 1 google.com";
-            return (Runtime.getRuntime().exec(command).waitFor() == 0);
-        } catch (Exception e) {
-            return false;
+            InetAddress address = InetAddress.getByName("www.google.com");
+            return !address.equals("");
+        } catch (UnknownHostException e) {
+            // Log error
         }
+
+        return false;
     }
 
 }

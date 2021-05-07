@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="70dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp">
 
@@ -34,13 +34,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_vjmlah"
-        android:layout_alignStart="@+id/txt_vjmlah"
-        android:layout_alignEnd="@+id/txt_vjmlah"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:text="3 Kali"
-        android:textAlignment="center" />
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="-20dp"
+        android:layout_toEndOf="@+id/txt_vjmlah"
+        android:text="3 Kali" />
 
     <Switch
         android:visibility="invisible"

@@ -283,9 +283,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         String user = "";
         try {
             JSONObject obj = new JSONObject(json);
-            MqttHelper mqttHelperOnline;
-            mqttHelperOnline = new MqttHelper(context);
-            mqttHelperOnline.serverUri.toString();
+            mqttHelper = new MqttHelper(context);
+            mqttHelper.serverUri.toString();
 
             MemoryPersistence memPer = new MemoryPersistence();
             final MqttAndroidClient client = new MqttAndroidClient(
@@ -297,7 +296,6 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
             try {
                 mDialog.setIndeterminate(true);
-
                 client.connect(null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken mqttToken) {
