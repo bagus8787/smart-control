@@ -113,7 +113,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
     private static String AUTH_KEY = "key=AAAAPZwfg1o:APA91bFyoAPcGEvSiGjIlw7upmN7C0tvliqdatgybhwRND6MLlcgxVncaRNQLyrAd-7pSYDHZQoM1ofQlWceCYbCmXhTH6GIIUluNwU7n26QrJ0-47bhRUvEP0foHmr0lKGx9sU94BwQ";
 
     LinearLayout ly_timer, ly_wifi, ly_img22;
-    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan, txt_time;
+    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan, txt_time, txt_pakan_habis;
     Button btn_beri_pakan;
     ImageView img_setting, img_notif, img_delete_alarm;
     RecyclerView rv_time_alarm;
@@ -149,6 +149,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 //    Handler mHandler = new Handler();
     boolean isRunning = true;
     MqttHelper mqttHelper;
+
+    String time_prev;
+    String time_now;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +210,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         txt_status_device = findViewById(R.id.txt_status_device);
         txt_status_pakan = findViewById(R.id.txt_status_pakan);
         txt_time = findViewById(R.id.txt_time);
+        txt_pakan_habis = findViewById(R.id.txt_pakan_habis);
 
         //ImageViewButton
         img_notif   = findViewById(R.id.img_notif);
@@ -288,9 +292,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 new Handler().postDelayed(new Runnable() {
                     @Override public void run() {
                         // Berhenti berputar/refreshing
+                        cek_connection();
                         ly_refresh.setRefreshing(false);
                         // fungsi-fungsi lain yang dijalankan saat refresh berhenti
-                        cek_connection();
                     }
                 }, 5000);
             }
@@ -531,14 +535,27 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         Runnable runnable = new Runnable() {
             public void run() {
                 Log.d("connectccc", String.valueOf(isInternetAvailable()));
-                if (isInternetAvailable() == false){
+                if (!isInternetAvailable()){
                     OfflineStatusPakan();
-//                    mDialog.dismiss();
                 } else {
                     OnlineStatusPakan();
-//                    mDialog.dismiss();
+                    if (time_now == time_prev){
+                        // offline
+                        txt_status_device.setText("Koneksi Device Terputus. Restart device!");
+                        txt_status_device.setTextSize(16);
+                        txt_time.setText("--");
+//                        txt_time.setVisibility(View.GONE);
+                    } else {
+                        // online
+                        txt_status_device.setText("Device : Terhubung (Online)");
+                        txt_time.setText(time_now);
+                    }
+
+                    time_prev = time_now;
+
+                    Log.d("nowwwww", "= " + time_now);
                 }
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 5000);
             }
         };
         runnable.run();
@@ -667,7 +684,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
         txt_time.setText(currentTime.toString());
 
-        String status = "Device : Tersambung (Offline)";
+        String status = "Device : Terhubung (Offline)";
         txt_status_device.setText(status);
 
         Call<StatusPakan> status_pakan = apiInterface.statusPakan();
@@ -683,6 +700,13 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                     txt_status_pakan.setText("Medium");
                 } else if (response.body().getLevel().equals("LOW")){
                     txt_status_pakan.setText("Sedikit");
+
+                    txt_pakan_habis.setText("Pakan kucing hampir habis. Segera isi kembali wadah makanan kucing kamu !");
+                    txt_pakan_habis.setVisibility(View.VISIBLE);
+                } else if (response.body().getLevel().equals("EMPTY")){
+                    txt_status_pakan.setText("HABIS");
+
+                    txt_pakan_habis.setVisibility(View.VISIBLE);
                 }
 
                 if (response.body().getPersen() == 10){
@@ -743,130 +767,239 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void connectComplete(boolean b, String s) {
                 if (b=true){
-                    String status = "Device : Tersambung (Online)";
-//                    txt_status_device.setText(status);
+                    String status = "Device : Terhubung (Online)";
+                    txt_status_device.setText(status);
                     Log.w("DebugStatus","Connected= " + b);
                 } else {
-                    String status = "Device : Tidak tersambung";
-//                    txt_status_device.setText(status);
+                    String status = "Device : Tidak Terhubung";
+                    txt_status_device.setText(status);
                     Log.w("DebugStatus","Connected= " + b);
                 }
             }
 
             @Override
             public void connectionLost(Throwable throwable) {
-                Log.w("DebugStatus","Connected= " + throwable);
-                if (throwable.toString() != "Connection lost (32109) - java.io.EOFException"){
-                    String status = "Device : Tersambung (Online)";
-                    txt_status_device.setText(status);
-                } else {
-                    String status = "Device : Tidak tersambung";
-                    txt_status_device.setText(status);
-                }
+//                Log.w("DebugStatus","Connected= " + throwable);
+//                if (throwable.toString() != "Connection lost (32109) - java.io.EOFException"){
+//                    String status = "Device : Tersambung (Online)";
+//                    txt_status_device.setText(status);
+//                } else {
+//                    String status = "Device : Tidak tersambung";
+//                    txt_status_device.setText(status);
+//                }
             }
 
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 Log.w("Debugss",mqttMessage.toString());
                 Log.w("topicss", topic.toString());
-
                 Log.d("federraaaar", sharedPrefManager.getSpIdDevice());
+                Log.d("federraaaarssss", topic.toString() + "|| " + mqttMessage.toString() + txt_time.getText().toString());
 
-                Log.d("federraaaarssss", topic.toString() + "|| " + mqttMessage.toString());
-
-                String feeder_topic_jarak = sharedPrefManager.getSpIdDevice()+"/feeder/status";
-                Log.d("federrr", feeder_topic_jarak);
-
-                String status = "Device : Tersambung (Online)";
+                String status = "Device : Terhubung (Online)";
                 txt_status_device.setText(status);
-                switch (topic.toString()){
-                    case "USW1000001/feeder/persen":
-                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
-                        Log.d("jaakkkk", "= " +pDefault.toString());
-                        if (pDefault == 10){
-                            pDefault = 100;
-                        } else if (pDefault == 9){
-                            pDefault = 90;
-                        } else if (pDefault == 8){
-                            pDefault = 80;
-                        } else if (pDefault == 7){
-                            pDefault = 70;
-                        } else if (pDefault == 6){
-                            pDefault = 60;
-                        } else if (pDefault == 5) {
-                            pDefault = 50;
-                        } else if (pDefault == 4){
-                            pDefault = 40;
-                        } else if (pDefault == 3){
-                            pDefault = 30;
-                        } else if (pDefault == 2){
-                            pDefault = 20;
-                        } else if (pDefault == 1){
-                            pDefault = 10;
-                        } else if (pDefault == 11) {
-                            pDefault = 100;
-                        }
 
-                        txtProgress.setText(pDefault + "%");
+                String feeder_topic_status = sharedPrefManager.getSpIdDevice()+"/feeder/status";
+                String feeder_topic_time = sharedPrefManager.getSpIdDevice()+"/feeder/time";
+                String feeder_topic_persen = sharedPrefManager.getSpIdDevice()+"/feeder/persen";
+                String feeder_topic_pakan = sharedPrefManager.getSpIdDevice()+"/feeder/pakan";
+//                Log.d("federrr", feeder_topic_jarak);
 
-                        Log.d("pddddd", mqttMessage.toString());
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                while (pStatus <= pDefault) {
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressBar.setProgress(pStatus);
-                                        }
-                                    });
-                                    try {
-                                        Thread.sleep(200);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                if (topic.equals(feeder_topic_status)){
+                    if (txt_time.getText().equals("--")){
+                        txt_status_device.setText("Device tidak terkoneksi dengan server. Silahkan Restart Device");
+                        txt_status_device.setTextSize(12);
+                    }
+                    Log.d("ajajajajaj", "akkakakaka");
+
+                } else if (topic.equals(feeder_topic_persen)){
+                    pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+                    Log.d("jaakkkk", "= " +pDefault.toString());
+                    if (pDefault == 10){
+                        pDefault = 100;
+                    } else if (pDefault == 9){
+                        pDefault = 90;
+                    } else if (pDefault == 8){
+                        pDefault = 80;
+                    } else if (pDefault == 7){
+                        pDefault = 70;
+                    } else if (pDefault == 6){
+                        pDefault = 60;
+                    } else if (pDefault == 5) {
+                        pDefault = 50;
+                    } else if (pDefault == 4){
+                        pDefault = 40;
+                    } else if (pDefault == 3){
+                        pDefault = 30;
+                    } else if (pDefault == 2){
+                        pDefault = 20;
+                    } else if (pDefault == 1){
+                        pDefault = 10;
+                    } else if (pDefault == 11) {
+                        pDefault = 100;
+                    }
+
+                    txtProgress.setText(pDefault + "%");
+
+                    Log.d("pddddd", mqttMessage.toString());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (pStatus <= pDefault) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setProgress(pStatus);
                                     }
-                                    pStatus++;
+                                });
+                                try {
+                                    Thread.sleep(200);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
                                 }
+                                pStatus++;
                             }
-                        }).start();
-
-                        break;
-
-                    case "USW1000001/feeder/pakan":
-                        Log.d("pddddd", mqttMessage.toString());
-                        if (mqttMessage.toString().equals("HIGH")){
-                            txt_status_pakan.setText("Penuh");
-                        } else if (mqttMessage.toString().equals("MEDIUM")){
-                            txt_status_pakan.setText("Medium");
-                        } else if (mqttMessage.toString().equals("LOW")){
-                            txt_status_pakan.setText("Sedikit");
-                        } else if (mqttMessage.toString().equals("EMPTY")){
-                            txt_status_pakan.setText("Habis");
                         }
-//                        txt_status_pakan.setText(mqttMessage.toString());
-                        break;
+                    }).start();
+                    Log.d("loloooooo", "akkakakaka");
 
-                    case "USW1000001/feeder/time":
-//                                    textView1.setText(mqttMessage.toString());
-//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
-                        Log.d("pddddd", mqttMessage.toString());
+                } else if (topic.equals(feeder_topic_pakan)){
+                    Log.d("pddddd", mqttMessage.toString());
+                    if (mqttMessage.toString().equals("HIGH")){
+                        txt_status_pakan.setText("Penuh");
+                    } else if (mqttMessage.toString().equals("MEDIUM")){
+                        txt_status_pakan.setText("Medium");
+                    } else if (mqttMessage.toString().equals("LOW")){
+                        txt_status_pakan.setText("Sedikit");
 
-                        String dtStart = mqttMessage.toString();
-                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-                        try {
-                            Date time_mqtt = format.parse(dtStart);
-                            Log.d("rtccc", time_mqtt.toString());
+                        txt_pakan_habis.setText("Pakan kucing hampir habis. Segera isi kembali wadah makanan kucing kamu !");
+                        txt_pakan_habis.setVisibility(View.VISIBLE);
+                    } else if (mqttMessage.toString().equals("EMPTY")){
+                        txt_status_pakan.setText("Habis");
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        txt_time.setText(mqttMessage.toString());
+                        txt_pakan_habis.setVisibility(View.VISIBLE);
+                    }
+                } else if (topic.equals(feeder_topic_time)){
+                    Log.d("pddddd", mqttMessage.toString());
 
-                        break;
+                    String dtStart = mqttMessage.toString();
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                    try {
+                        Date time_mqtt = format.parse(dtStart);
+                        Log.d("rtccc", time_mqtt.toString());
 
-                    default:
-                        Log.d("Error","Error ocquired");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    time_now = mqttMessage.toString();
+
+                    txt_time.setText(time_now);
+                    txt_status_device.setTextSize(16);
                 }
+
+
+//                switch (topic.toString()){
+//                    case "USW1000001/feeder/status":
+//                        if (txt_time.getText().equals("--")){
+//                            txt_status_device.setText("Device tidak terkoneksi dengan server. Silahkan Restart Device");
+//                            txt_status_device.setTextSize(12);
+//                        }
+//                        break;
+//                    case "USW1000001/feeder/persen":
+//                        pDefault = Integer.parseInt(String.valueOf(mqttMessage));
+//                        Log.d("jaakkkk", "= " +pDefault.toString());
+//                        if (pDefault == 10){
+//                            pDefault = 100;
+//                        } else if (pDefault == 9){
+//                            pDefault = 90;
+//                        } else if (pDefault == 8){
+//                            pDefault = 80;
+//                        } else if (pDefault == 7){
+//                            pDefault = 70;
+//                        } else if (pDefault == 6){
+//                            pDefault = 60;
+//                        } else if (pDefault == 5) {
+//                            pDefault = 50;
+//                        } else if (pDefault == 4){
+//                            pDefault = 40;
+//                        } else if (pDefault == 3){
+//                            pDefault = 30;
+//                        } else if (pDefault == 2){
+//                            pDefault = 20;
+//                        } else if (pDefault == 1){
+//                            pDefault = 10;
+//                        } else if (pDefault == 11) {
+//                            pDefault = 100;
+//                        }
+//
+//                        txtProgress.setText(pDefault + "%");
+//
+//                        Log.d("pddddd", mqttMessage.toString());
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                while (pStatus <= pDefault) {
+//                                    handler.post(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            progressBar.setProgress(pStatus);
+//                                        }
+//                                    });
+//                                    try {
+//                                        Thread.sleep(200);
+//                                    } catch (InterruptedException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    pStatus++;
+//                                }
+//                            }
+//                        }).start();
+//
+//                        break;
+//
+//                    case "USW1000001/feeder/pakan":
+//                        Log.d("pddddd", mqttMessage.toString());
+//                        if (mqttMessage.toString().equals("HIGH")){
+//                            txt_status_pakan.setText("Penuh");
+//                        } else if (mqttMessage.toString().equals("MEDIUM")){
+//                            txt_status_pakan.setText("Medium");
+//                        } else if (mqttMessage.toString().equals("LOW")){
+//                            txt_status_pakan.setText("Sedikit");
+//
+//                            txt_pakan_habis.setText("Pakan kucing hampir habis. Segera isi kembali wadah makanan kucing kamu !");
+//                            txt_pakan_habis.setVisibility(View.VISIBLE);
+//                        } else if (mqttMessage.toString().equals("EMPTY")){
+//                            txt_status_pakan.setText("Habis");
+//
+//                            txt_pakan_habis.setVisibility(View.VISIBLE);
+//                        }
+////                        txt_status_pakan.setText(mqttMessage.toString());
+//                        break;
+//
+//                    case "USW1000001/feeder/time":
+//                        Log.d("pddddd", mqttMessage.toString());
+//
+//                        String dtStart = mqttMessage.toString();
+//                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+//                        try {
+//                            Date time_mqtt = format.parse(dtStart);
+//                            Log.d("rtccc", time_mqtt.toString());
+//
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        time_now = mqttMessage.toString();
+//
+//                        txt_time.setText(time_now);
+//                        txt_status_device.setTextSize(16);
+//
+//                        break;
+//
+//                    default:
+//                        Log.d("Error","Error ocquired");
+//                }
             }
 
             @Override

@@ -90,6 +90,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
     private WifiInfo info;
     private File mFile;
     ProgressDialog progressDialog;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +151,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
             Log.d("infowifi", "= " + wifiInfo.getSSID());
         }
 
-        getCurrentSsid(getApplicationContext());
+//        getCurrentSsid(getApplicationContext());
 //        startWifiConnected();
 //        connectWifi(SSID_DEVICE, PSWD_DEVICE);
 
@@ -429,6 +430,9 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
+
+                    progressDialog.show();
+
                     sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, secret_key);
                     register();
 
@@ -447,57 +451,50 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                         public void onResponse(Call call, Response response) {
                             Log.d("responsee", "= " + response.toString());
                             Log.d("responsee", "= " + "naannanannana");
+
                         }
 
                         @Override
                         public void onFailure(Call call, Throwable t) {
+                            Log.d("wififiiffiiff", "aaa =" + "kkkk" );
 
-                        }
-                    });
+                            try {
+                                //set time in mili
+                                Thread.sleep(10000);
 
-                    int SPLASH_DISPLAY_LENGHT = 5000;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
-                    Log.d("internettt", String.valueOf(internetConnected()));
+                            progressDialog.dismiss();
 
-                    if (internetConnected()==true){
-                        Log.d("lolooo", "connection true");
-//                        new Handler().postDelayed(new Runnable(){
-//                            @Override
-//                            public void run() {
-//                                /* Create an Intent that will start the Menu-Activity. */
-//                                Intent mainIntent = new Intent(AddWifiActivity.this,HomeFeederActivity.class);
-//                                startActivity(mainIntent);
-//                                finish();
-//                            }
-//                        }, SPLASH_DISPLAY_LENGHT);
-                    } else {
-//                        mWifiManager.setWifiEnabled(true);
-
-                        if (sharedPrefManager.getSPSudahLogin() == true) {
                             if (ActivityCompat.checkSelfPermission(AddWifiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                 List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
                                 for (WifiConfiguration i : list) {
-                                    Log.d(LOG, SSID_WIFI);
+                                    Log.d(LOG,  "= " + SSID_WIFI);
                                     if (i.SSID != null && i.SSID.equals("\"" + SSID_WIFI + "\"")) {
                                         mWifiManager.disconnect();
                                         mWifiManager.enableNetwork(i.networkId, true);
                                         mWifiManager.reconnect();
-
-                                        Intent mainIntent = new Intent(AddWifiActivity.this, HomeFeederActivity.class);
-                                        startActivity(mainIntent);
+                                        progressDialog.dismiss();
                                     }
                                 }
                             }
-                            progressDialog.dismiss();
-                            break;
-                        } else {
-                            Intent mainIntent = new Intent(AddWifiActivity.this, LoginFirebaseActivity.class);
-                            startActivity(mainIntent);
-                            progressDialog.dismiss();
-                            break;
-                        }
-                        }
 
+                            if (sharedPrefManager.getSPSudahLogin() == true) {
+                                Intent mainIntent = new Intent(AddWifiActivity.this, HomeFeederActivity.class);
+                                startActivity(mainIntent);
+                                progressDialog.dismiss();
+
+                            } else {
+                                Intent mainIntent = new Intent(AddWifiActivity.this, LoginFirebaseActivity.class);
+                                startActivity(mainIntent);
+                                progressDialog.dismiss();
+                            }
+
+                        }
+                    });
+                }
 //                        if (ActivityCompat.checkSelfPermission(AddWifiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 //                            List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
 //                            for (WifiConfiguration i : list) {
@@ -524,7 +521,6 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 //                    }
 
 //                    mWifiManager.setWifiEnabled(false);
-                    }
 
                 break;
 
@@ -557,7 +553,8 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed(){
-        finish();
+//        finish();
+        super.onBackPressed();
     }
 
     public boolean localConnected(){

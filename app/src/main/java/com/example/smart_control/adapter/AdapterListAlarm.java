@@ -1,32 +1,55 @@
 package com.example.smart_control.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smart_control.Myapp;
 import com.example.smart_control.R;
+import com.example.smart_control.handler.DatabaseHandler;
 import com.example.smart_control.model.AlarmModel;
+import com.example.smart_control.network.ApiInterface;
+import com.example.smart_control.network.ApiLocalClient;
+import com.example.smart_control.repository.AlarmRepository;
 import com.example.smart_control.ui.user.activity.DetailDevicesActivity;
+import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.AlarmViewHolder> {
     private ArrayList<AlarmModel> alarms;
     private Context context;
     private SharedPrefManager sharedPrefManager;
+    private ApiInterface apiInterface;
+    private DatabaseHandler db;
+    private AlarmRepository alarmRepository;
+
+    private AlertDialog.Builder b;
 
     public AdapterListAlarm(Context context) {
         this.context = context;
         sharedPrefManager = new SharedPrefManager(Myapp.getContext());
+        apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
+        db = new DatabaseHandler(context);
+        b =  new AlertDialog.Builder(context);
+        alarmRepository = new AlarmRepository();
     }
 
     @NonNull
@@ -64,29 +87,130 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
 
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
         View mView;
-        int id;
+        Integer id;
         String time, count, old_time;
-
+        ImageView img_edit_alarm, img_delete_alarm;
         TextView rvTime, rvCount, rvOldTime;
 
         public AlarmViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            rvTime = itemView.findViewById(R.id.txt_time);
+
+            img_edit_alarm = itemView.findViewById(R.id.img_edit_alarm);
+            img_delete_alarm = itemView.findViewById(R.id.delete_edit_alarm);
+
+            img_edit_alarm.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View v) {
                     context.startActivity(new Intent(context, DetailDevicesActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             .putExtra("IT_ID", String.valueOf(id))
                             .putExtra("IT_TIME", time)
                             .putExtra("IT_COUNT", count)
-//                            .putExtra("IT_TGL_UPLOAD", tgl_upload)
-//                            .putExtra("IT_URL_GAMBAR", url_gambar)
                     );
-
                 }
             });
+
+            img_delete_alarm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(mView.getRootView().getContext())
+                            .setMessage("Anda yakin mau menghapus Timer pakan ?")
+                            .setCancelable(false)
+                            .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do something...
+                                    ProgressDialog progressDialog = new ProgressDialog(mView.getRootView().getContext());
+                                    progressDialog.show();
+                                    progressDialog.setMessage("Sedang menghapus timer");
+
+                                    Call<String> deleteAlarm = apiInterface.deleteAlarm(
+                                            time,
+                                            sharedPrefManager.getSpSecretKey()
+                                    );
+
+                                    deleteAlarm.enqueue(new Callback<String>() {
+                                        @Override
+                                        public void onResponse(Call<String> call, Response<String> response) {
+
+                                            progressDialog.dismiss();
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<String> call, Throwable t) {
+
+                                        }
+                                    });
+                                    db.deleteById(id);
+                                    alarmRepository.getAlarmLocal(mView.getRootView().getContext());
+
+                                    progressDialog.dismiss();
+                                    Toast.makeText(context, "Timer berhasil di hapus", Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    alertDialog.show();
+
+//                    b.setTitle("Apakah anda yakin menghapus timer pakan ?");
+//                    b.setPositiveButton("OK",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int whichButton) {
+//                                    // do something...
+//                                    progressDialog.show();
+//                                    progressDialog.setMessage("Sedang menghapus timer");
+//
+//                                    Call<String> deleteAlarm = apiInterface.deleteAlarm(
+//                                            time,
+//                                            sharedPrefManager.getSpSecretKey()
+//                                    );
+//
+//                                    deleteAlarm.enqueue(new Callback<String>() {
+//                                        @Override
+//                                        public void onResponse(Call<String> call, Response<String> response) {
+//                                            progressDialog.dismiss();
+//                                        }
+//
+//                                        @Override
+//                                        public void onFailure(Call<String> call, Throwable t) {
+//
+//                                        }
+//                                    });
+//                                }
+//                            }
+//                    );
+//                    b.setNegativeButton("Cancel",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int whichButton) {
+//                                    dialog.dismiss();
+//                                }
+//                            }
+//                    );
+//                    b.show();
+                }
+            });
+
+//            itemView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    context.startActivity(new Intent(context, DetailDevicesActivity.class)
+//                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            .putExtra("IT_ID", String.valueOf(id))
+//                            .putExtra("IT_TIME", time)
+//                            .putExtra("IT_COUNT", count)
+//                    );
+//
+//                }
+//            });
         }
 
         public void setId(Integer ids) {
@@ -110,10 +234,6 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
 
         public void setOldTime(String old_time) {
             this.old_time = old_time;
-
-//            rvOldTime = mView.findViewById(R.id.txt_count);
-//            rvOldTime.setText(count.toUpperCase());
-//            Log.d("setCount", String.valueOf(rvOldTime));
         }
 
     }

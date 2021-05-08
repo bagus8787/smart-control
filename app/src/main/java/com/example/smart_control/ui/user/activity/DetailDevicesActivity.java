@@ -49,7 +49,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailDevicesActivity extends AppCompatActivity implements View.OnClickListener {
-    ImageView mImageView;
+    ImageView mImageView, img_back;
     TextView mResultView;
     View mColorView;
 
@@ -89,6 +89,9 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
         ip_time_before = findViewById(R.id.ip_time_before);
         ip_count = findViewById(R.id.ip_count);
         ip_count_new = findViewById(R.id.ip_count_new);
+
+        img_back = findViewById(R.id.img_back);
+        img_back.setOnClickListener(this);
 
         datePicker1 = findViewById(R.id.datePicker1);
         btn_update_timer = findViewById(R.id.btn_update_timer);
@@ -195,6 +198,10 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
                 }
 
                 break;
+
+            case R.id.img_back:
+                startActivity(new Intent(context, HomeFeederActivity.class));
+                break;
         }
 
     }
@@ -268,7 +275,17 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
                         Log.i("OnlineLog", "Message published= " + message.toString());
+
+                        try {
+                            //set time in mili
+                            Thread.sleep(3000);
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
                         mDialog.dismiss();
+
 //                        handler.postDelayed(new Runnable() {
 //                            @Override
 //                            public void run() {

@@ -14,13 +14,13 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     // static variable
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     // Database name
     private static final String DATABASE_NAME = "db_coba";
 
     // table name
-    private static final String TABLE_TALL = "talls";
+    private static final String TABLE_ALARM = "tb_alarm";
 
     // column tables
     private static final String KEY_ID = "id";
@@ -51,7 +51,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Create table
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_TALL + "("
+        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_ALARM + "("
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_NAME + " TEXT,"
                 + KEY_TALL + " TEXT,"
@@ -67,7 +67,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // on Upgrade database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TALL);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALARM);
         onCreate(db);
     }
 
@@ -84,14 +84,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DAY, alarmModel.getOld_time());
         values.put(KEY_STATUS, "On");
 
-        db.insert(TABLE_TALL, null, values);
+        db.insert(TABLE_ALARM, null, values);
         db.close();
     }
 
     public AlarmModel getAlarm (int id){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_TALL, new String[]{
+        Cursor cursor = db.query(TABLE_ALARM, new String[]{
                 KEY_ID,
                 KEY_NAME,
                 KEY_TALL ,
@@ -127,7 +127,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<AlarmModel> getAllRecord(){
         ArrayList<AlarmModel> modelList = new ArrayList<AlarmModel>();
         //Select All Query
-        String selectQuery  = "SELECT * FROM " + TABLE_TALL;
+        String selectQuery  = "SELECT * FROM " + TABLE_ALARM;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -172,7 +172,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //get Total
     public int getDbModelCount(){
-        String countQuery = "SELECT * FROM " + TABLE_TALL;
+        String countQuery = "SELECT * FROM " + TABLE_ALARM;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         cursor.close();
@@ -194,7 +194,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.d("idnyaaaaa", String.valueOf(alarmModel.getId()));
 
         //Update
-        return db.update(TABLE_TALL, values, KEY_ID + " = ? ",
+        return db.update(TABLE_ALARM, values, KEY_ID + " = ? ",
                 new String[]{
                         String.valueOf(alarmModel.getId())
                 });
@@ -205,12 +205,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteModel(){
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TABLE_TALL);
-//        db.delete(TABLE_TALL, KEY_ID + " = ? ",
+        db.execSQL("delete from " + TABLE_ALARM);
+//        db.delete(TABLE_ALARM, KEY_ID + " = ? ",
 //                new String[]{
 //                        String.valueOf(alarmModel.getId())
 //                });
 //
 //        db.close();
+    }
+
+    //Delete By Id
+    public void deleteById(Integer id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ALARM, KEY_ID + " = ?",new String[]{Integer.toString(id)} );
+        db.close();
     }
 }

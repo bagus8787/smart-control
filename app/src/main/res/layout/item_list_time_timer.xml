@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:layout_marginLeft="10dp"
@@ -40,7 +41,7 @@
         android:text="3 Kali" />
 
     <Switch
-        android:visibility="invisible"
+        android:visibility="gone"
         android:id="@+id/sw_on_off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,6 +49,29 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="60dp" />
+
+    <ImageView
+        android:id="@+id/img_edit_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/delete_edit_alarm"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/delete_edit_alarm"
+        android:src="@drawable/ic_baseline_edit"
+        app:tint="@color/colorPrimary" />
+
+
+    <ImageView
+        android:id="@+id/delete_edit_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="5dp"
+        android:src="@drawable/ic_baseline_delete"
+        app:tint="@android:color/holo_red_dark" />
 
     <View
         android:layout_width="match_parent"

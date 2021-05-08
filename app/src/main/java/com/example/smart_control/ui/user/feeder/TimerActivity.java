@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     ProgressDialog mDialog;
     Button alarmbutton, cancelButton;
     EditText text, txt_count;
+    ImageView img_back;
     PendingIntent pendingIntent;
     AlarmManager alarmManager;
     Intent intent;
@@ -97,7 +99,12 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         text = (EditText) findViewById(R.id.editText);
         txt_count = findViewById(R.id.txt_count);
 
+        img_back = findViewById(R.id.img_back);
+
         ly_ulangi = findViewById(R.id.ly_ulangi);
+
+        img_back = findViewById(R.id.img_back);
+        img_back.setOnClickListener(this);
 
         cb_senin = findViewById(R.id.cb_senin);
         cb_selasa = findViewById(R.id.cb_selasa);
@@ -272,6 +279,10 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                 });
                 finish();
                 break;
+
+            case R.id.img_back:
+                startActivity(new Intent(context, HomeFeederActivity.class));
+                break;
         }
 
     }
@@ -290,10 +301,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             final MqttAndroidClient client = new MqttAndroidClient(
                     context, mqttHelper.serverUri.toString(), user, memPer);
             Log.d("clientt", client.toString());
-
             mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
             mDialog.show();
-
             try {
                 mDialog.setIndeterminate(true);
                 client.connect(null, new IMqttActionListener() {
@@ -410,7 +419,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.DAY_OF_WEEK, weekno);
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.HOUR_OF_DAY, 00);
         calendar.set(Calendar.MINUTE, 00);
 
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

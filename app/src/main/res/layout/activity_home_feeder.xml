@@ -183,7 +183,7 @@
                     android:layout_marginRight="20dp"
                     android:text="--"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -197,10 +197,10 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:background="@drawable/bg_rounded"
                     android:backgroundTint="@color/colorWhite">
 
@@ -217,7 +217,8 @@
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="86dp"
                             android:layout_height="85dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginTop="5dp"
                             android:indeterminate="false"
                             android:max="100"
                             android:progress="0"
@@ -244,9 +245,9 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_toEndOf="@+id/progressBar"
-                            android:textStyle="bold"
+                            android:text="Status Pakan :"
                             android:textSize="16sp"
-                            android:text="Status Pakan :" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/txt_status_pakan"
@@ -257,6 +258,24 @@
                             android:layout_marginStart="0dp"
                             android:layout_marginTop="5dp"
                             android:text="-"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txt_pakan_habis"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_status_pakan"
+                            android:layout_alignStart="@+id/txt_status_pakan"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="0dp"
+                            android:layout_marginBottom="17dp"
+                            android:text="Pakan kucing habis. Segera isi kembali wadah makanan kucing kamu !"
+                            android:textColor="@android:color/holo_red_dark"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </RelativeLayout>
@@ -577,6 +596,7 @@
                     android:layout_height="25dp"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/ic_baseline_delete"
+                    android:visibility="invisible"
                     app:tint="@android:color/holo_red_dark" />
 
             </RelativeLayout>

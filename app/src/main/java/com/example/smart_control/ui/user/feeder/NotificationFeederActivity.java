@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.smart_control.R;
@@ -34,7 +37,7 @@ import retrofit2.Response;
 
 import static com.example.smart_control.Myapp.getContext;
 
-public class NotificationFeederActivity extends AppCompatActivity {
+public class NotificationFeederActivity extends AppCompatActivity implements View.OnClickListener {
     private DatabaseNotif db;
     private ApiInterface apiInterface;
     Context context;
@@ -44,6 +47,7 @@ public class NotificationFeederActivity extends AppCompatActivity {
     AdapterNotif adapterNotif;
 
     RecyclerView rv_notif_list;
+    ImageView img_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +59,12 @@ public class NotificationFeederActivity extends AppCompatActivity {
         notifRepository = new NotifRepository();
         adapterNotif = new AdapterNotif(getApplicationContext());
         notifViewModel = new NotifViewModel(getApplication());
+        context = getApplicationContext();
 
         rv_notif_list = findViewById(R.id.rv_notif_list);
+
+        img_back = findViewById(R.id.img_back);
+        img_back.setOnClickListener(this);
 
         rv_notif_list.setLayoutManager(new LinearLayoutManager(getContext()));
         rv_notif_list.setAdapter(adapterNotif);
@@ -116,6 +124,20 @@ public class NotificationFeederActivity extends AppCompatActivity {
 
         db = new DatabaseNotif(NotificationFeederActivity.this);
         db.addRecord(db_model);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.img_back:
+                startActivity(new Intent(context, HomeFeederActivity.class));
+                break;
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
 }

@@ -27,7 +27,6 @@ public class AlarmRepository {
         sharedPrefManager = new SharedPrefManager(Myapp.getContext());
         alarmLiveData = new MutableLiveData<>();
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
-
     }
 
     public void getAlarmLocal(Context context){

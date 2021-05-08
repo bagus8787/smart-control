@@ -119,7 +119,7 @@ public interface ApiInterface {
 
     //Timer Delete
     @FormUrlEncoded
-    @POST("timer/edit")
+    @POST("timer/delete")
     Call<String> deleteAlarm(
             @Field("time") String time,
             @Field("secret_key") String secret_key);

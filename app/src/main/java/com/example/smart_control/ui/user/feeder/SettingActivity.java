@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.smart_control.R;
@@ -20,8 +21,9 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    ImageView img_logout;
-    TextView txt_nama, txt_email;
+    ImageView img_logout, img_back;
+    TextView txt_nama, txt_email,txt_device_id;
+    RelativeLayout rv_logout;
 
     SharedPrefManager sharedPrefManager;
 
@@ -36,9 +38,19 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
         txt_nama    = findViewById(R.id.txt_nama);
         txt_email   = findViewById(R.id.txt_email);
+        txt_device_id = findViewById(R.id.txt_device_id);
+
+        img_back = findViewById(R.id.img_back);
+
+        rv_logout   = findViewById(R.id.rv_logout);
+
+        rv_logout.setOnClickListener(this);
+
+        img_back.setOnClickListener(this);
 
         txt_nama.setText(sharedPrefManager.getSpNama());
         txt_email.setText(sharedPrefManager.getSpEmail());
+        txt_device_id.setText("Device ID : " + sharedPrefManager.getSpIdDevice());
 
 //      Auth Listener
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -58,7 +70,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.img_logout:
+            case R.id.rv_logout:
                 auth.signOut();
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_SSID, "");
@@ -68,6 +80,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
                 sharedPrefManager.setSpDeviceSsid("");
                 startActivity(new Intent(SettingActivity.this, LoginFirebaseActivity.class));
+                break;
+
+            case R.id.img_back:
+                startActivity(new Intent(SettingActivity.this, HomeFeederActivity.class));
                 break;
         }
     }
