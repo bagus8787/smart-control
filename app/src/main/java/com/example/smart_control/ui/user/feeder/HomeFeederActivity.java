@@ -247,6 +247,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
             public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                Log.d("taskkk", "= " + task);
                 if (!task.isSuccessful()) {
                     token = task.getException().getMessage();
                     Log.w("FCM TOKEN Failed", task.getException());
@@ -254,7 +255,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                     token = task.getResult().getToken();
 //                    AUTH_KEY = "key="+token;
 //                    Log.d("token_auth", AUTH_KEY);
-                    Log.i("FCM TOKEN", token);
+                    Log.i("FCM_TOKEN", token);
                 }
             }
         });
@@ -339,9 +340,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
             case R.id.btn_beri_pakan:
                 Log.d("wifi", mWifi.toString());
-                Log.d("netttt", String.valueOf(localConnected()));
+                Log.d("netttt", String.valueOf(isInternetConnected()));
 
-                if (!localConnected()){
+                if (!isInternetConnected()){
                     OfflineFeeder();
                 } else {
                     OnlineFeeder();
@@ -539,8 +540,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
-                Log.d("connectccc", String.valueOf(localConnected()));
-                if (!localConnected()){
+                Log.d("connectccc", String.valueOf(isInternetConnected()));
+                if (!isInternetConnected()){
                     OfflineStatusPakan();
                 } else {
                     OnlineStatusPakan();
@@ -592,13 +593,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onSuccess(IMqttToken asyncActionToken) {
                             Log.i("OnlineLog", "Message published= " + message.toString());
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                // change image
-//                            }
-//
-//                        }, 1000); // 5000ms delay
                         }
 
                         @Override
@@ -613,6 +607,17 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 Log.e("TAG", e.toString());
                 e.printStackTrace();
             }
+
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    token = task.getResult().getToken();
+                    Log.d("FCM_TOKEN", "AAAA =" + token);
+
+                    pushNotification("", token ,"Pemberian pakan kucing berhasil ✔" ,"Tenang lur kucing e gak keluwen");
+
+                }
+            });
 //            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
         } else {
             try {
@@ -632,13 +637,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onSuccess(IMqttToken asyncActionToken) {
                             Log.i("OnlineLog", "Message published= " + message.toString());
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                // change image
-//                            }
-//
-//                        }, 1000); // 5000ms delay
                         }
 
                         @Override
@@ -646,6 +644,18 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                             Log.i("TAGGGGGGGG", "publish failed!") ;
                         }
                     });
+
+//                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+//                            token = task.getResult().getToken();
+//                            Log.d("FCM_TOKEN", "AAAA =" + token);
+//
+//                            pushNotification("", token ,"Pemberian pakan kucing berhasil ✔" ,"Tenang lur kucing e gak keluwen");
+//
+//                        }
+//                    });
+
                     mDialog.dismiss();
                 }
 
@@ -656,18 +666,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         }
 
         Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
-
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                token = task.getResult().getToken();
-                Log.d("FCM_TOKEN", "AAAA =" + token);
-
-                pushNotification("", token ,"Pemberian pakan kucing berhasil ✔" ,"Tenang lur kucing e gak keluwen");
-
-            }
-        });
-
     }
 
     public void OfflineFeeder(){
@@ -815,7 +813,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             public void connectComplete(boolean b, String s) {
                 if (b=true){
                     String status = "Device : Terhubung (Online)";
-                    txt_status_device.setText(status);
+//                    txt_status_device.setText(status);
                     Log.w("DebugStatus","Connected= " + b);
                 } else {
                     String status = "Device : Tidak Terhubung";
@@ -854,8 +852,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
                 if (topic.equals(feeder_topic_status)){
                     if (txt_time.getText().equals("--")){
-                        txt_status_device.setText("Device tidak terkoneksi dengan server. Silahkan Restart Device");
-                        txt_status_device.setTextSize(12);
+//                        txt_status_device.setText("Device tidak terkoneksi dengan server. Silahkan Restart Device");
+//                        txt_status_device.setTextSize(12);
                     }
                     Log.d("ajajajajaj", "akkakakaka");
 
@@ -1083,7 +1081,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 .show();
     }
 
-    public boolean localConnected() {
+    public boolean isInternetConnected() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 //            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
             try {

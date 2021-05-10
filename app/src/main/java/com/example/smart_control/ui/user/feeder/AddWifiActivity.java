@@ -169,9 +169,9 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
         sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, PSWD_DEVICE);
 
-        Log.d("conectedddd", String.valueOf(internetConnected()));
+        Log.d("conectedddd", String.valueOf(isInternetConnected()));
 
-//        if (internetConnected() == true) {
+//        if (isInternetConnected() == true) {
 //            turnOffData();
 //        }
     }
@@ -416,13 +416,13 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.btn_konek:
 
                 Log.d(LOG, "= " + SSID_WIFI);
-                Log.d(LOG, "= "  + internetConnected());
+                Log.d(LOG, "= "  + isInternetConnected());
                 progressDialog.setMessage("Device sedang di konfigurasi .Mohon tunggu sebentar...");
                 progressDialog.setCancelable(false);
 
                 progressDialog.show();
 
-                if (internetConnected() == false) {
+                if (isInternetConnected()) {
                     progressDialog.dismiss();
                     // setup the alert builder
                     String message = "Matikan data selluler terlebih dahulu dan pastikan WiFi tersambung dengan " + sharedPrefManager.getSpDeviceSsid() + ".";
@@ -580,7 +580,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
         return false;
     }
 
-    public boolean internetConnected() {
+    public boolean isInternetConnected() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 //            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
             try {

@@ -85,107 +85,115 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:orientation="vertical">
-
-        <TimePicker
-            android:id="@+id/datePicker1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:timePickerMode="spinner"/>
-
-        <CheckBox
-            android:id="@+id/cb_ulangi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Setiap hari"
-            android:checked="false"/>
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/ly_ulangi"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
             android:orientation="vertical">
 
-            <CheckBox
-                android:id="@+id/cb_senin"
+            <TimePicker
+                android:id="@+id/datePicker1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Senin" />
+                android:timePickerMode="spinner"/>
 
             <CheckBox
-                android:id="@+id/cb_selasa"
+                android:id="@+id/cb_ulangi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Selasa" />
+                android:text="Setiap hari"
+                android:checked="false"/>
 
-            <CheckBox
-                android:id="@+id/cb_rabu"
+            <LinearLayout
+                android:id="@+id/ly_ulangi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rabu" />
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
-            <CheckBox
-                android:id="@+id/cb_kamis"
+                <CheckBox
+                    android:id="@+id/cb_senin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Senin" />
+
+                <CheckBox
+                    android:id="@+id/cb_selasa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Selasa" />
+
+                <CheckBox
+                    android:id="@+id/cb_rabu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rabu" />
+
+                <CheckBox
+                    android:id="@+id/cb_kamis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kamis" />
+
+                <CheckBox
+                    android:id="@+id/cb_jumat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jumat" />
+
+                <CheckBox
+                    android:id="@+id/cb_sabtu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sabtu" />
+
+                <CheckBox
+                    android:id="@+id/cb_minggu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Minggu" />
+
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/txt_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kamis" />
+                android:layout_margin="10dp"
+                android:hint="Masukkan Jumlah pemberian pakan"/>
 
-            <CheckBox
-                android:id="@+id/cb_jumat"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/button"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Jumat" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bg_rounded"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="Buat timer"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite" />
 
-            <CheckBox
-                android:id="@+id/cb_sabtu"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sabtu" />
-
-            <CheckBox
-                android:id="@+id/cb_minggu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Minggu" />
-
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="7dp"
+                android:layout_gravity="center_horizontal"
+                android:text="Stop Alarm"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/txt_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:hint="Masukkan Jumlah pemberian pakan"/>
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_rounded"
-            android:backgroundTint="@color/colorPrimary"
-            android:text="Buat timer"
-            android:textAllCaps="false"
-            android:textColor="@color/colorWhite" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="7dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Stop Alarm"
-            android:visibility="gone"/>
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

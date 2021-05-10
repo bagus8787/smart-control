@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -271,7 +272,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                             setAlarm(1, token);
                         }
 
-                        if (localConnected()){
+                        if (!isInternetConnected()){
                             setOfflineAlarm();
                         } else {
                             setOnlineAlarm(token);
@@ -478,19 +479,45 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         db.addRecord(db_model);
     }
 
-    public boolean localConnected() {
-        ConnectivityManager cm =
-                (ConnectivityManager)TimerActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public boolean isInternetConnected() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
+            try {
+                InetAddress address = InetAddress.getByName("www.google.com");
+                return !address.equals("");
+            } catch (UnknownHostException e) {
+                // Log error
+            }
+            return false;
+        } else {
+            ConnectivityManager cm =
+                    (ConnectivityManager) TimerActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            String SSID = "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"";
 
-        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+            Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"");
 
-        if (activeNetwork.getExtraInfo().equals(SSID)){
-            return true;
+            if (!activeNetwork.getExtraInfo().equals(SSID)) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        return false;
+
+//        ConnectivityManager cm =
+//                (ConnectivityManager)HomeFeederActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        Log.d("netwrokkk", "= " + activeNetwork.toString());
+//        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+//
+//        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+//
+//        if (activeNetwork.getExtraInfo().equals(SSID)){
+//            return true;
+//        }
+//        return false;
 
 //        try {
 //            InetAddress address = InetAddress.getByName("www.google.com");
@@ -498,6 +525,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 //        } catch (UnknownHostException e) {
 //            // Log error
 //        }
+//
 //        return false;
     }
 }

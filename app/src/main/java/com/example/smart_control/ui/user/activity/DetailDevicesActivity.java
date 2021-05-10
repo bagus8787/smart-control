@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -156,7 +157,8 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_update_timer:
-                if (!localConnected()){
+                Log.d("networkkkk", "= " + isInternetConnected());
+                if (isInternetConnected()){
                     AlertDialog.Builder b=  new  AlertDialog.Builder(this);
                             b.setTitle("Apakah anda yakin memperbarui jadwal pakan ?");
                             b.setPositiveButton("OK",
@@ -164,7 +166,6 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
                                         public void onClick(DialogInterface dialog, int whichButton) {
                                             // do something...
                                             setOnlineAlarm();
-
                                         }
                                     }
                             );
@@ -264,7 +265,7 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
             mDialog.show();
             mDialog.setMessage("Sedang memperbarui jadwal pakan. Mohon tunggu sebentar...");
             Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
-            if (mqttHelper.mqttAndroidClient.isConnected() == false){
+            if (!mqttHelper.mqttAndroidClient.isConnected()){
                 mqttHelper.mqttAndroidClient.connect();
                 mDialog.dismiss();
                 Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
@@ -322,26 +323,30 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
         startActivity(new Intent(context, HomeFeederActivity.class));
     }
 
-    public boolean localConnected(){
-        ConnectivityManager cm =
-                (ConnectivityManager)DetailDevicesActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public boolean isInternetConnected() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
+            try {
+                InetAddress address = InetAddress.getByName("www.google.com");
+                return !address.equals("");
+            } catch (UnknownHostException e) {
+                // Log error
+            }
+            return false;
+        } else {
+            ConnectivityManager cm =
+                    (ConnectivityManager) DetailDevicesActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            String SSID = "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"";
 
-        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+            Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"");
 
-        if (activeNetwork.getExtraInfo().equals(SSID)){
-            return true;
+            if (!activeNetwork.getExtraInfo().equals(SSID)) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        return false;
-
-//        try {
-//            InetAddress address = InetAddress.getByName("www.google.com");
-//            return !address.equals("");
-//        } catch (UnknownHostException e) {
-//            // Log error
-//        }
-//        return false;
     }
 }

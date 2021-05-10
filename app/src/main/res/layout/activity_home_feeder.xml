@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ly_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.user.feeder.HomeFeederActivity">
@@ -34,7 +33,9 @@
                     android:text="Home"
                     android:textColor="@color/colorWhite"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp" />
 
                 <ImageView
                     android:layout_width="20dp"
@@ -43,8 +44,10 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="2dp"
                     android:layout_toEndOf="@+id/txt_kat"
-                    android:src="@drawable/ic_baseline_keyboard_arrow_down"
-                    app:tint="@color/colorWhite" />
+                    app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down"
+                    app:tint="@color/colorWhite"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@+id/txt_kat" />
 
                 <ImageView
                     android:id="@+id/img_notif"
@@ -75,16 +78,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!--            Cuaca-->
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@id/ly_refresh">
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="-10dp"
                     android:layout_marginTop="-20dp"
                     android:layout_marginRight="-10dp"
-                    android:paddingBottom="5dp"
                     android:background="@drawable/bg_rounded_two"
-                    android:backgroundTint="@color/colorPrimaryDark">
+                    android:backgroundTint="@color/colorPrimaryDark"
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:id="@+id/txt_nama"
@@ -106,8 +114,8 @@
                         android:layout_below="@+id/txt_nama"
                         android:layout_alignStart="@+id/txt_nama"
                         android:layout_marginStart="0dp"
-                        android:layout_marginBottom="10dp"
                         android:layout_marginLeft="15dp"
+                        android:layout_marginBottom="10dp"
                         android:text="Pastikan kucingmu terjamin makanannya, jangan sampai kucingmu kelaparan!"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
@@ -122,8 +130,8 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="0dp"
                         android:text="="
-                        android:visibility="gone"
-                        android:textColor="@color/colorWhite" />
+                        android:textColor="@color/colorWhite"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/btn_show_token"
@@ -135,8 +143,8 @@
                         android:layout_marginTop="0dp"
                         android:layout_marginEnd="30dp"
                         android:onClick="showToken"
-                        android:visibility="gone"
-                        android:text="Show Token" />
+                        android:text="Show Token"
+                        android:visibility="gone" />
 
                     <Button
                         android:layout_width="match_parent"
@@ -146,20 +154,20 @@
                         android:layout_marginStart="0dp"
                         android:layout_marginTop="0dp"
                         android:layout_marginEnd="30dp"
+                        android:onClick="sendToken"
                         android:text="Send Token"
-                        android:visibility="gone"
-                        android:onClick="sendToken"/>
+                        android:visibility="gone" />
 
                 </RelativeLayout>
 
                 <TextView
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Pemberian pakan terakhir Hari ini pukul 07.00 WIB"
                     android:textColor="@android:color/holo_red_dark"
-                    android:text="Pemberian pakan terakhir Hari ini pukul 07.00 WIB"/>
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/txt_status_device"
@@ -187,13 +195,13 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Pemberian pakan selanjutnya pukul 12.00 WIB 5 Jam dari sekarang"
                     android:textColor="@color/colorPrimaryDark"
-                    android:text="Pemberian pakan selanjutnya pukul 12.00 WIB 5 Jam dari sekarang"/>
+                    android:visibility="gone" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -263,7 +271,6 @@
 
                         <TextView
                             android:id="@+id/txt_pakan_habis"
-                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/txt_status_pakan"
@@ -277,7 +284,8 @@
                             android:text="Pakan kucing habis. Segera isi kembali wadah makanan kucing kamu !"
                             android:textColor="@android:color/holo_red_dark"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:visibility="gone" />
                     </RelativeLayout>
 
                 </RelativeLayout>
@@ -285,8 +293,8 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/bg_rounded"
                     android:backgroundTint="@color/colorWhite">
@@ -298,7 +306,9 @@
                         android:layout_alignParentTop="true"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="0dp"
-                        android:src="@drawable/empty_eat" />
+                        android:src="@drawable/img_cat_green"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="10dp" />
 
                     <Button
                         android:id="@+id/btn_beri_pakan"
@@ -321,8 +331,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center"
                     android:layout_marginBottom="10dp"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -333,21 +343,20 @@
                         android:orientation="vertical">
 
 
-
                     </LinearLayout>
 
 
                 </LinearLayout>
 
                 <ProgressBar
-                    android:visibility="gone"
                     android:id="@+id/progressBar1"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:minWidth="220dp"
                     android:minHeight="60dp"
-                    android:rotation="270" />
+                    android:rotation="270"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -358,17 +367,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="10dp"
-                        android:gravity="center_horizontal"
-                        android:orientation="horizontal"
                         android:background="@drawable/bg_rounded"
-                        android:backgroundTint="@color/colorWhite">
+                        android:backgroundTint="@color/colorWhite"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
 
                         <LinearLayout
                             android:id="@+id/ly_wifi"
                             android:layout_width="93dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
                             android:layout_gravity="center"
+                            android:layout_margin="10dp"
                             android:orientation="vertical">
 
                             <ImageView
@@ -392,8 +401,8 @@
                             android:id="@+id/ly_timer"
                             android:layout_width="93dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_margin="10dp">
+                            android:layout_margin="10dp"
+                            android:orientation="vertical">
 
                             <ImageView
                                 android:id="@+id/img_devicess"
@@ -415,8 +424,8 @@
                         <LinearLayout
                             android:layout_width="93dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_margin="10dp">
+                            android:layout_margin="10dp"
+                            android:orientation="vertical">
 
                             <ImageView
                                 android:id="@+id/img_devicesss"
@@ -440,25 +449,25 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="10dp"
-                        android:gravity="center_horizontal"
-                        android:orientation="horizontal"
                         android:background="@drawable/bg_rounded"
-                        android:backgroundTint="@color/colorWhite">
+                        android:backgroundTint="@color/colorWhite"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
 
                         <LinearLayout
                             android:layout_width="93dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
                             android:layout_gravity="center"
+                            android:layout_margin="10dp"
                             android:orientation="vertical">
 
                             <ImageView
@@ -481,8 +490,8 @@
                         <LinearLayout
                             android:layout_width="93dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_margin="10dp">
+                            android:layout_margin="10dp"
+                            android:orientation="vertical">
 
                             <ImageView
                                 android:id="@+id/img_aa"
@@ -505,8 +514,8 @@
                             android:id="@+id/ly_img22"
                             android:layout_width="93dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_margin="10dp">
+                            android:layout_margin="10dp"
+                            android:orientation="vertical">
 
                             <ImageView
                                 android:id="@+id/img_vv"
@@ -533,34 +542,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:padding="10dp"
                     android:orientation="vertical"
+                    android:padding="10dp"
                     android:visibility="gone">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:text="Feeder Timer"/>
+                        android:text="Feeder Timer"
+                        android:textSize="12sp" />
 
                     <TimePicker
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
             <RelativeLayout
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
-                android:paddingRight="10dp">
+                android:layout_marginTop="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
 
                 <TextView
-                    android:visibility="gone"
                     android:id="@+id/br_v"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -570,7 +578,8 @@
                     android:layout_marginTop="12dp"
                     android:text="Beri pakan "
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
             </RelativeLayout>
 
@@ -578,8 +587,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp">
 
                 <TextView
                     android:layout_width="150dp"
@@ -604,16 +613,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_time_alarm"
-                    android:clickable="true"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:clickable="true"
                     android:focusable="true" />
 
             </LinearLayout>
@@ -622,5 +631,4 @@
 
     </LinearLayout>
 
-
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</ScrollView>
