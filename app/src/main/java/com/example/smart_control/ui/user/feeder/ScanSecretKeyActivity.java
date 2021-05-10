@@ -1,10 +1,12 @@
 package com.example.smart_control.ui.user.feeder;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,19 +18,18 @@ import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.loopj.android.http.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class ScanDeviceActivity extends AppCompatActivity {
+public class ScanSecretKeyActivity extends AppCompatActivity {
 
     IntentIntegrator intentIntegrator;
     WifiManager mWifiManager;
     SharedPrefManager sharedPrefManager;
     ApiInterface apiInterface;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,20 +38,22 @@ public class ScanDeviceActivity extends AppCompatActivity {
 
         sharedPrefManager = new SharedPrefManager(this);
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
+        context = getApplicationContext();
 
 //        Set WIFI to enabled
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 //        mWifiManager.setWifiEnabled(false);
 
-        intentIntegrator = new IntentIntegrator(ScanDeviceActivity.this);
+        intentIntegrator = new IntentIntegrator(ScanSecretKeyActivity.this);
         intentIntegrator.setCaptureActivity(Potrait.class);
         intentIntegrator.setCameraId(0);
         intentIntegrator.setOrientationLocked(true);
         intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-        intentIntegrator.setPrompt("Scan Barcode Device");
+        intentIntegrator.setPrompt("Scan Secret Key");
         intentIntegrator.initiateScan();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        Scan
@@ -60,23 +63,27 @@ public class ScanDeviceActivity extends AppCompatActivity {
                 Toast.makeText(this, "Hasil tidak ditemukan", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, ScanWifiActivity.class));
             }else{
-                String device_id = result.getContents();
+//                String device_id = result.getContents();
 //                String device_id = "USW1000001";
 
-                String secret_key = device_id + "-" + UUID.randomUUID().toString();
-//                Log.d("secret_key", secret_key);
+                String secret_key = result.getContents().toString();
 
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, String.valueOf(device_id));
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, String.valueOf(device_id));
+                // Receiving side
+                byte[] datas = Base64.decode(secret_key, Base64.DEFAULT);
+                String text = new String(datas, StandardCharsets.UTF_8);
+
+                Log.d("secret_key_after", text);
+
 
                 Log.d("secret_key", sharedPrefManager.getSpIdDevice());
 
-                Toast.makeText(this, device_id, Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this, AddWifiActivity.class)
-                .putExtra("name", device_id)
-                .putExtra("secret_key", secret_key));
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, text);
 
-//                Log.d("SHAREDSSID", "=" + sharedPrefManager.getSpDeviceSsid());
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, HomeFeederActivity.class)
+                        .putExtra("secret_key", text));
+
+                Log.d("SHAREDSSID", "=" + sharedPrefManager.getSpDeviceSsid());
             }
         }else{
             super.onActivityResult(requestCode, resultCode, data);
@@ -85,7 +92,8 @@ public class ScanDeviceActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        startActivity(new Intent(ScanDeviceActivity.this, LoginFirebaseActivity.class));
+        startActivity(new Intent(ScanSecretKeyActivity.this, LoginFirebaseActivity.class));
+        finish();
     }
 
 }

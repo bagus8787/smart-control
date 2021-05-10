@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.smart_control.R;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
+import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -61,7 +64,7 @@ public class ScanWifiActivity extends AppCompatActivity {
 
     EditText edt_ssid, edt_pass;
     Button btn_konek;
-    String name;
+//    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +74,16 @@ public class ScanWifiActivity extends AppCompatActivity {
         sharedPrefManager = new SharedPrefManager(this);
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
 
-        name = getIntent().getStringExtra("name");
+        Log.d("wifipppp", "ssid wifi= " + sharedPrefManager.getSpSsid() +"pass wifi= " + sharedPrefManager.getSpPass() +"pass devices= " + PSWD);
+
+//        name = getIntent().getStringExtra("name");
 
         edt_ssid = findViewById(R.id.edt_ssid);
         edt_pass = findViewById(R.id.edt_pass);
 
         btn_konek = findViewById(R.id.btn_konek);
 
-        edt_ssid.setText("FEEDR-" + name);
+        edt_ssid.setText("FEEDR-" + sharedPrefManager.getSpIdDevice());
 
         mWifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         conf = new WifiConfiguration();
@@ -116,32 +121,62 @@ public class ScanWifiActivity extends AppCompatActivity {
         btn_konek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "WifiManagerActivity---connectedClick");
 
-                if (edt_ssid.getText().toString().isEmpty()){
-                    edt_ssid.setError("SSID harus diisi");
-                    edt_ssid.requestFocus();
-                    return;
+                if (!localConnected()){
+                    Toast.makeText(ScanWifiActivity.this, "Matikan data selluler terlebih dahulu dan pastikan WiFi tersambung dengan " + sharedPrefManager.getSpDeviceSsid() + ".", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.i(TAG, "WifiManagerActivity---connectedClick");
+
+                    if (edt_ssid.getText().toString().isEmpty()){
+                        edt_ssid.setError("SSID harus diisi");
+                        edt_ssid.requestFocus();
+                        return;
+                    }
+
+                    if (edt_pass.getText().toString().isEmpty()){
+                        edt_pass.setText("12348765");
+                    }
+
+//                    SSID = edt_ssid.getText().toString();
+                    PSWD = edt_pass.getText().toString();
+
+//                    startWifiConnected();
+                    Log.d("wifipppp", "ssid wifi= " + sharedPrefManager.getSpSsid() +" pass wifi= " + sharedPrefManager.getSpPass() +" pass devices= " + PSWD);
+                    Call device_config = apiInterface.config(
+                            sharedPrefManager.getSpSsid(),
+                            sharedPrefManager.getSpPass(),
+                            PSWD,
+                            sharedPrefManager.getSpSecretKey()
+                    );
+
+                    device_config.enqueue(new Callback() {
+                        @Override
+                        public void onResponse(Call call, Response response) {
+                            mWifiManager.setWifiEnabled(false);
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Throwable t) {
+
+                        }
+                    });
+
+//                    sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, PSWD);
+
+                    if (PSWD == null){
+                        sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, "12348765");
+                    } else {
+                        sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, PSWD);
+                    }
+//                    sharedPrefManager.saveSPString(SharedPrefManager.SP_PASS, "12348765");
+
+                    mWifiManager.setWifiEnabled(true);
+
+                    Toast.makeText(ScanWifiActivity.this, "Device berhasil di konfigurasi ulang", Toast.LENGTH_LONG).show();
+
+                    startActivity(new Intent(ScanWifiActivity.this, SettingActivity.class));
                 }
 
-                if (edt_pass.getText().toString().isEmpty()){
-                    edt_pass.setText("12348765");
-                    finish();
-                }
-
-                SSID = edt_ssid.getText().toString();
-                PSWD = edt_pass.getText().toString();
-
-                startWifiConnected();
-
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_SSID, SSID);
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_DEVICE_PASS, PSWD);
-
-                mWifiManager.setWifiEnabled(true);
-
-                Toast.makeText(ScanWifiActivity.this, "Berhasil konek Device", Toast.LENGTH_LONG).show();
-
-                startActivity(new Intent(ScanWifiActivity.this, AddWifiActivity.class));
             }
         });
     }
@@ -324,5 +359,36 @@ public class ScanWifiActivity extends AppCompatActivity {
         } else {
             return false;
         }
+    }
+
+    public boolean localConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager)ScanWifiActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+
+        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+
+        if (activeNetwork.getExtraInfo().equals(SSID)){
+            return true;
+        }
+        return false;
+
+//        try {
+//            InetAddress address = InetAddress.getByName("www.google.com");
+//            return !address.equals("");
+//        } catch (UnknownHostException e) {
+//            // Log error
+//        }
+//
+//        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+//        startActivity(new Intent(ScanWifiActivity.this, LoginFirebaseActivity.class));
+//        finish();
     }
 }

@@ -49,10 +49,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -60,6 +62,8 @@ import cz.msebera.android.httpclient.util.TextUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.loopj.android.http.AsyncHttpClient.LOG_TAG;
 
 public class AddWifiActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -73,7 +77,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
     String secret_key;
     private static int DELATE_TIME = 5000;
 
-    Button btn_konek;
+    Button btn_konek, btn_scan_user;
     TextView edt_pass;
     SearchableSpinner spinner_wifi;
 
@@ -113,6 +117,8 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
         wifiList = findViewById(R.id.wifiList);
 
         btn_konek = findViewById(R.id.btn_konek);
+        btn_scan_user = findViewById(R.id.btn_scan_user);
+
         edt_pass = findViewById(R.id.edt_pass);
 
         spinner_wifi = findViewById(R.id.spinner_wifi);
@@ -132,6 +138,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         btn_konek.setOnClickListener(this);
+        btn_scan_user.setOnClickListener(this);
 
 //        mWifiManager.setWifiEnabled(true);
 
@@ -415,7 +422,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
                 progressDialog.show();
 
-                if (internetConnected() == true) {
+                if (internetConnected() == false) {
                     progressDialog.dismiss();
                     // setup the alert builder
                     String message = "Matikan data selluler terlebih dahulu dan pastikan WiFi tersambung dengan " + sharedPrefManager.getSpDeviceSsid() + ".";
@@ -451,7 +458,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                         public void onResponse(Call call, Response response) {
                             Log.d("responsee", "= " + response.toString());
                             Log.d("responsee", "= " + "naannanannana");
-
+                            Toast.makeText(AddWifiActivity.this, "Kofingurasi gagal. Coba ulangi lagi.", Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -460,7 +467,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
                             try {
                                 //set time in mili
-                                Thread.sleep(10000);
+                                Thread.sleep(15000);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -473,9 +480,9 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                                 for (WifiConfiguration i : list) {
                                     Log.d(LOG,  "= " + SSID_WIFI);
                                     if (i.SSID != null && i.SSID.equals("\"" + SSID_WIFI + "\"")) {
-                                        mWifiManager.disconnect();
+//                                        mWifiManager.disconnect();
                                         mWifiManager.enableNetwork(i.networkId, true);
-                                        mWifiManager.reconnect();
+//                                        mWifiManager.reconnect();
                                         progressDialog.dismiss();
                                     }
                                 }
@@ -524,6 +531,10 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 
                 break;
 
+            case R.id.btn_scan_user:
+                startActivity(new Intent(AddWifiActivity.this, ScanSecretKeyActivity.class));
+                break;
+
         }
     }
 
@@ -569,7 +580,32 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
         return false;
     }
 
-    public boolean internetConnected(){
+    public boolean internetConnected() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
+            try {
+                InetAddress address = InetAddress.getByName("www.google.com");
+                return !address.equals("");
+            } catch (UnknownHostException e) {
+                // Log error
+            }
+            return false;
+        } else {
+            ConnectivityManager cm =
+                    (ConnectivityManager) AddWifiActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            String SSID = "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"";
+
+            Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"");
+
+            if (!activeNetwork.getExtraInfo().equals(SSID)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
 //        try {
 //            int timeoutMs = 1500;
 //            Socket sock = new Socket();
@@ -588,14 +624,14 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
 //            return false;
 //        }
 
-        try {
-            InetAddress address = InetAddress.getByName("www.google.com");
-            return !address.equals("");
-        } catch (UnknownHostException e) {
-            // Log error
-        }
-
-        return false;
+//        try {
+//            InetAddress address = InetAddress.getByName("www.google.com");
+//            return !address.equals("");
+//        } catch (UnknownHostException e) {
+//            // Log error
+//        }
+//
+//        return false;
     }
 
 }

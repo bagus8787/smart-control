@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -154,7 +156,7 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_update_timer:
-                if (isInternetAvailable()==true){
+                if (!localConnected()){
                     AlertDialog.Builder b=  new  AlertDialog.Builder(this);
                             b.setTitle("Apakah anda yakin memperbarui jadwal pakan ?");
                             b.setPositiveButton("OK",
@@ -320,23 +322,26 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
         startActivity(new Intent(context, HomeFeederActivity.class));
     }
 
-    public boolean isInternetAvailable() {
-//        Runtime runtime = Runtime.getRuntime();
-//        try {
-//            Process ipProcess = runtime.exec("/system/bin/ping -c 1 " + mqttHelper.serverIp);
-//            int     exitValue = ipProcess.waitFor();
-//            return (exitValue == 0);
-//        }
-//        catch (IOException e)          { e.printStackTrace(); }
-//        catch (InterruptedException e) { e.printStackTrace(); }
-//        return false;
+    public boolean localConnected(){
+        ConnectivityManager cm =
+                (ConnectivityManager)DetailDevicesActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        try {
-            InetAddress address = InetAddress.getByName("www.google.com");
-            return !address.equals("");
-        } catch (UnknownHostException e) {
-            // Log error
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+
+        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+
+        if (activeNetwork.getExtraInfo().equals(SSID)){
+            return true;
         }
         return false;
+
+//        try {
+//            InetAddress address = InetAddress.getByName("www.google.com");
+//            return !address.equals("");
+//        } catch (UnknownHostException e) {
+//            // Log error
+//        }
+//        return false;
     }
 }

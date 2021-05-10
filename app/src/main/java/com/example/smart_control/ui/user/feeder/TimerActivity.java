@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -269,7 +271,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                             setAlarm(1, token);
                         }
 
-                        if (isInternetAvailable() == false){
+                        if (localConnected()){
                             setOfflineAlarm();
                         } else {
                             setOnlineAlarm(token);
@@ -476,24 +478,26 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         db.addRecord(db_model);
     }
 
-    public boolean isInternetAvailable() {
-//        try {
-//            int timeoutMs = 1000;
-//            Socket sock = new Socket();
-//            SocketAddress sockaddr = new InetSocketAddress("178.128.217.111", 1883);
-//
-//            sock.connect(sockaddr, timeoutMs);
-//            sock.close();
-//
-//            return true;
-//        } catch (IOException e) { return false; }
+    public boolean localConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager)TimerActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        try {
-            InetAddress address = InetAddress.getByName("www.google.com");
-            return !address.equals("");
-        } catch (UnknownHostException e) {
-            // Log error
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+
+        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+
+        if (activeNetwork.getExtraInfo().equals(SSID)){
+            return true;
         }
         return false;
+
+//        try {
+//            InetAddress address = InetAddress.getByName("www.google.com");
+//            return !address.equals("");
+//        } catch (UnknownHostException e) {
+//            // Log error
+//        }
+//        return false;
     }
 }

@@ -55,7 +55,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
-        <activity android:name=".mqtt.WifiConnectActivity"/>
+        <activity android:name=".ui.user.feeder.ScanSecretKeyActivity"></activity>
+        <activity android:name=".ui.user.feeder.MyBarcodeSecretKeyActivity" />
+        <activity android:name=".mqtt.WifiConnectActivity" />
         <activity android:name=".mqtt.MqttTesActivity" />
         <activity android:name=".mqtt.MqttActivity" />
         <activity android:name=".ui.user.feeder.PanduanActivity" />

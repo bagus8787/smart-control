@@ -3,21 +3,26 @@ package com.example.smart_control.ui.user.feeder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -334,9 +339,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
             case R.id.btn_beri_pakan:
                 Log.d("wifi", mWifi.toString());
-                Log.d("netttt", String.valueOf(isInternetAvailable()));
+                Log.d("netttt", String.valueOf(localConnected()));
 
-                if (isInternetAvailable() == false){
+                if (!localConnected()){
                     OfflineFeeder();
                 } else {
                     OnlineFeeder();
@@ -534,8 +539,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
-                Log.d("connectccc", String.valueOf(isInternetAvailable()));
-                if (!isInternetAvailable()){
+                Log.d("connectccc", String.valueOf(localConnected()));
+                if (!localConnected()){
                     OfflineStatusPakan();
                 } else {
                     OnlineStatusPakan();
@@ -563,29 +568,30 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     public void OnlineFeeder(){
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
-        String json = "{\"count\":"+1+",\"secret_key\":"+sharedPrefManager.getSpSecretKey()+"}";
+        String json = "{\"count\":"+1+",\"secret_key\":\""+sharedPrefManager.getSpSecretKey()+"\"}";
         String user = "";
 
         mDialog.setMessage("Sedang memberi pakan. Mohon tunggu sebentar");
         mDialog.setIndeterminate(true);
 
-        try {
-            mDialog.show();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                mDialog.show();
 
-            Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
-            if (mqttHelper.mqttAndroidClient.isConnected() == false){
-                mqttHelper.mqttAndroidClient.connect();
-                mDialog.dismiss();
-                Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
-                return;
-            } else {
-                MqttMessage message = new MqttMessage();
-                message.setPayload(json.getBytes());
-                message.setQos(0);
-                mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", message,null, new IMqttActionListener() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.i("OnlineLog", "Message published= " + message.toString());
+                Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
+                if (mqttHelper.mqttAndroidClient.isConnected() == false){
+                    mqttHelper.mqttAndroidClient.connect();
+                    mDialog.dismiss();
+                    Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    MqttMessage message = new MqttMessage();
+                    message.setPayload(json.getBytes());
+                    message.setQos(0);
+                    mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", message,null, new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            Log.i("OnlineLog", "Message published= " + message.toString());
 //                        handler.postDelayed(new Runnable() {
 //                            @Override
 //                            public void run() {
@@ -593,19 +599,60 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 //                            }
 //
 //                        }, 1000); // 5000ms delay
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.i("TAGGGGGGGG", "publish failed!") ;
-                    }
-                });
-                mDialog.dismiss();
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            Log.i("TAGGGGGGGG", "publish failed!") ;
+                        }
+                    });
+                    mDialog.dismiss();
+                }
+
+            } catch (MqttException e) {
+                Log.e("TAG", e.toString());
+                e.printStackTrace();
             }
+//            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                mDialog.show();
 
-        } catch (MqttException e) {
-            Log.e("TAG", e.toString());
-            e.printStackTrace();
+                Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
+                if (mqttHelper.mqttAndroidClient.isConnected() == false){
+                    mqttHelper.mqttAndroidClient.connect();
+                    mDialog.dismiss();
+                    Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    MqttMessage message = new MqttMessage();
+                    message.setPayload(json.getBytes());
+                    message.setQos(0);
+                    mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", message,null, new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            Log.i("OnlineLog", "Message published= " + message.toString());
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // change image
+//                            }
+//
+//                        }, 1000); // 5000ms delay
+                        }
+
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            Log.i("TAGGGGGGGG", "publish failed!") ;
+                        }
+                    });
+                    mDialog.dismiss();
+                }
+
+            } catch (MqttException e) {
+                Log.e("TAG", e.toString());
+                e.printStackTrace();
+            }
         }
 
         Toast.makeText(HomeFeederActivity.this, "Memberi pakan", Toast.LENGTH_LONG).show();
@@ -1036,70 +1083,54 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 .show();
     }
 
-    public boolean isInternetAvailable() {
-//        try {
-//            int timeoutMs = 0;
-//            Socket sock = new Socket();
-//            SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 43);
-//
-//            sock.connect(sockaddr, timeoutMs);
-//            sock.close();
-//
-//            return true;
-//        } catch (IOException e) { return false; }
+    public boolean localConnected() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
+            try {
+                InetAddress address = InetAddress.getByName("www.google.com");
+                return !address.equals("");
+            } catch (UnknownHostException e) {
+                // Log error
+            }
+            return false;
+        } else {
+            ConnectivityManager cm =
+                    (ConnectivityManager) HomeFeederActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-//        Runtime runtime = Runtime.getRuntime();
-//        try {
-//            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-//            int     exitValue = ipProcess.waitFor();
-//            return (exitValue == 0);
-//        }
-//        catch (IOException e)          { e.printStackTrace(); }
-//        catch (InterruptedException e) { e.printStackTrace(); }
-//        return false;
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            String SSID = "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"";
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                // TODO Auto-generated method stub
-//                while (isRunning) {
-//                    try {
-//                        Thread.sleep(10000);
-//                        handler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                try {
-//                                    int timeoutMs = 0;
-//                                    Socket sock = new Socket();
-//                                    SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 43);
-//
-//                                    sock.connect(sockaddr, timeoutMs);
-//                                    sock.close();
-//
-////                                    return true;
-//                                    ConnectionStatus = "connect";
-//                                } catch (IOException e) {
-//                                    ConnectionStatus = "disconnect";
-//
-////                                    return false;
-//                                }
-//                            }
-//                        });
-//                    } catch (Exception e) {
-//                        // TODO: handle exception
-//                    }
-//                }
-//            }
-//        }).start();
+            Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"");
 
-        try {
-            InetAddress address = InetAddress.getByName("www.google.com");
-            return !address.equals("");
-        } catch (UnknownHostException e) {
-            // Log error
+            if (!activeNetwork.getExtraInfo().equals(SSID)) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
-        return false;
+//        ConnectivityManager cm =
+//                (ConnectivityManager)HomeFeederActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        Log.d("netwrokkk", "= " + activeNetwork.toString());
+//        String SSID = "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"";
+//
+//        Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-"+ sharedPrefManager.getSpIdDevice().toString() + "\"");
+//
+//        if (activeNetwork.getExtraInfo().equals(SSID)){
+//            return true;
+//        }
+//        return false;
+
+//        try {
+//            InetAddress address = InetAddress.getByName("www.google.com");
+//            return !address.equals("");
+//        } catch (UnknownHostException e) {
+//            // Log error
+//        }
+//
+//        return false;
     }
 
 }

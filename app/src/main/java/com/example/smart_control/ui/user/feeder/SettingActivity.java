@@ -1,8 +1,10 @@
 package com.example.smart_control.ui.user.feeder;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +25,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
     ImageView img_logout, img_back;
     TextView txt_nama, txt_email,txt_device_id;
-    RelativeLayout rv_logout;
+    RelativeLayout rv_logout, rv_my_barcode, rv_setting;
 
     SharedPrefManager sharedPrefManager;
 
@@ -43,8 +45,12 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         img_back = findViewById(R.id.img_back);
 
         rv_logout   = findViewById(R.id.rv_logout);
+        rv_my_barcode = findViewById(R.id.rv_my_barcode);
+        rv_setting  = findViewById(R.id.rv_setting);
 
         rv_logout.setOnClickListener(this);
+        rv_my_barcode.setOnClickListener(this);
+        rv_setting.setOnClickListener(this);
 
         img_back.setOnClickListener(this);
 
@@ -71,19 +77,43 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.rv_logout:
-                auth.signOut();
+                AlertDialog.Builder b=  new  AlertDialog.Builder(this);
+                b.setTitle("Apakah anda yakin mau log out ?");
+                b.setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // do something...
+//                                sharedPrefManager.saveSPString(SharedPrefManager.SP_SSID, "");
+//                                sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, "");
+//                                sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, "");
+                                auth.signOut();
+                                sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
 
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_SSID, "");
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, "");
-                sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, "");
-                sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
-
-                sharedPrefManager.setSpDeviceSsid("");
-                startActivity(new Intent(SettingActivity.this, LoginFirebaseActivity.class));
+//                                sharedPrefManager.setSpDeviceSsid("");
+                                startActivity(new Intent(SettingActivity.this, LoginFirebaseActivity.class));
+                            }
+                        }
+                );
+                b.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                            }
+                        }
+                );
+                b.show();
                 break;
 
             case R.id.img_back:
                 startActivity(new Intent(SettingActivity.this, HomeFeederActivity.class));
+                break;
+
+            case R.id.rv_my_barcode:
+                startActivity(new Intent(SettingActivity.this, MyBarcodeSecretKeyActivity.class));
+                break;
+
+            case R.id.rv_setting:
+                startActivity(new Intent(SettingActivity.this, ScanWifiActivity.class));
                 break;
         }
     }
@@ -91,5 +121,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    @Override
+    public void onBackPressed(){
+        startActivity(new Intent(SettingActivity.this, HomeFeederActivity.class));
     }
 }

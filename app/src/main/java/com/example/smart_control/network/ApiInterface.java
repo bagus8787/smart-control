@@ -82,8 +82,12 @@ public interface ApiInterface {
 
 
 
+    //MyBarcode
+    @GET("api/generatebrcd/{secret_key}")
+    Call<String> getMyBarcode(@Path("secret_key") String secret_key);
 
-//    Local
+
+    //Local
     //Register
     @FormUrlEncoded
     @POST("register")

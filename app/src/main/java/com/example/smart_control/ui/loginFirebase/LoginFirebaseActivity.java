@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.smart_control.R;
 import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
 import com.example.smart_control.ui.user.feeder.ScanDeviceActivity;
+import com.example.smart_control.ui.user.feeder.ScanSecretKeyActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -49,12 +50,22 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 
     SharedPrefManager sharedPrefManager;
 
+    Button btn_secret_key;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_firebase);
 
         sharedPrefManager = new SharedPrefManager(this);
+        btn_secret_key = findViewById(R.id.btn_secret_key);
+        btn_secret_key.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginFirebaseActivity.this, ScanSecretKeyActivity.class));
+                finish();
+            }
+        });
 
         googleButton = findViewById(R.id.login_google);
         FirebaseConnect();
@@ -87,7 +98,6 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 
 
                 if(firebaseAuth.getCurrentUser() != null){
-
                     if(sharedPrefManager.getSpSecretKey() == ""){
                         startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
                         finish();
@@ -186,5 +196,10 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
         }else{
             progressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        finish();
     }
 }

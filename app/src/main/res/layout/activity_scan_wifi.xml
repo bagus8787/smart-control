@@ -121,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:hint="12345678"/>
+                android:hint="12348765"/>
 
         </LinearLayout>
 
@@ -129,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
-            android:text="* Password default = 12345678 .\n* Anda bisa men setting password sesuai keinginan ."
+            android:text="* Password default = 12348765 .\n* Anda bisa men setting password sesuai keinginan ."
             />
 
         <Button
@@ -140,7 +140,7 @@
             android:layout_gravity="center"
             android:background="@drawable/bg_rounded"
             android:backgroundTint="@color/colorPrimaryDark"
-            android:text="Berikutnya"
+            android:text="Save"
             android:textColor="@android:color/white" />
 
     </LinearLayout>

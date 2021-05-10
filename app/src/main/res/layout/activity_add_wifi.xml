@@ -141,6 +141,17 @@
             android:text="Berikutnya"
             android:textColor="@android:color/white" />
 
+        <Button
+            android:id="@+id/btn_scan_user"
+            android:layout_width="281dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_rounded"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:text="Scan Pengguna Lain"
+            android:textColor="@android:color/white" />
+
     </LinearLayout>
 
     <ListView
