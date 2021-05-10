@@ -561,7 +561,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
                     Log.d("nowwwww", "= " + time_now);
                 }
-                handler.postDelayed(this, 5000);
+                handler.postDelayed(this, 10000);
             }
         };
         runnable.run();
@@ -580,10 +580,27 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 mDialog.show();
 
                 Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
-                if (mqttHelper.mqttAndroidClient.isConnected() == false){
+                if (!mqttHelper.mqttAndroidClient.isConnected()){
                     mqttHelper.mqttAndroidClient.connect();
                     mDialog.dismiss();
                     Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+
+//                    MqttMessage message = new MqttMessage();
+//                    message.setPayload(json.getBytes());
+//                    message.setQos(0);
+//                    mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/beri_pakan", message,null, new IMqttActionListener() {
+//                        @Override
+//                        public void onSuccess(IMqttToken asyncActionToken) {
+//                            Log.i("OnlineLog", "Message published= " + message.toString());
+//                        }
+//
+//                        @Override
+//                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+//                            Log.i("TAGGGGGGGG", "publish failed!") ;
+//                        }
+//                    });
+//                    mDialog.dismiss();
+
                     return;
                 } else {
                     MqttMessage message = new MqttMessage();
@@ -842,7 +859,7 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 Log.d("federraaaarssss", topic.toString() + "|| " + mqttMessage.toString() + txt_time.getText().toString());
 
                 String status = "Device : Terhubung (Online)";
-                txt_status_device.setText(status);
+//                txt_status_device.setText(status);
 
                 String feeder_topic_status = sharedPrefManager.getSpIdDevice()+"/feeder/status";
                 String feeder_topic_time = sharedPrefManager.getSpIdDevice()+"/feeder/time";
