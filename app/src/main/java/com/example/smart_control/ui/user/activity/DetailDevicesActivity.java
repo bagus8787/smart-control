@@ -258,7 +258,7 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
         Log.d("timee", time_now);
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
 
-        String json = "{\"time\":\""+ time_now +"\",\"count\":"+Integer.parseInt(ip_count_new.getText().toString())+",\"old_time\":\""+ time +"\",\"secret_key\":"+sharedPrefManager.getSpSecretKey()+"}";
+        String json = "{\"time\":\""+ time_now +"\",\"count\":"+Integer.parseInt(ip_count_new.getText().toString())+",\"old_time\":\""+ time +"\",\"secret_key\":\""+sharedPrefManager.getSpSecretKey()+"\"}";
         String user = "";
 
         try {
@@ -269,7 +269,7 @@ public class DetailDevicesActivity extends AppCompatActivity implements View.OnC
                 mqttHelper.mqttAndroidClient.connect();
                 mDialog.dismiss();
                 Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
-                return;
+//                return;
             } else {
                 MqttMessage message = new MqttMessage();
                 message.setPayload(json.getBytes());
