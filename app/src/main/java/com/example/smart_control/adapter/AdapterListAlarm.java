@@ -23,12 +23,22 @@ import com.example.smart_control.Myapp;
 import com.example.smart_control.R;
 import com.example.smart_control.handler.DatabaseHandler;
 import com.example.smart_control.model.AlarmModel;
+import com.example.smart_control.mqtt.MqttHelper;
 import com.example.smart_control.network.ApiInterface;
 import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.repository.AlarmRepository;
 import com.example.smart_control.ui.user.activity.DetailDevicesActivity;
 import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
 import com.example.smart_control.utils.SharedPrefManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -45,15 +55,19 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
     private ApiInterface apiInterface;
     private DatabaseHandler db;
     private AlarmRepository alarmRepository;
+    private MqttHelper mqttHelper;
 
     private AlertDialog.Builder b;
+//    ProgressDialog mDialog;
 
     public AdapterListAlarm(Context context) {
         this.context = context;
         sharedPrefManager = new SharedPrefManager(Myapp.getContext());
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
         db = new DatabaseHandler(context);
+        mqttHelper = new MqttHelper(context);
         b =  new AlertDialog.Builder(context);
+//        mDialog = new ProgressDialog(context);
         alarmRepository = new AlarmRepository();
     }
 
@@ -132,6 +146,7 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
                                         progressDialog.setMessage("Sedang menghapus timer");
 
                                         // Online delete timer
+                                        OnlineDeleteTimer(time);
 
                                         db.deleteById(id);
                                         alarmRepository.getAlarmLocal(mView.getRootView().getContext());
@@ -234,6 +249,86 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
 
         public void setOldTime(String old_time) {
             this.old_time = old_time;
+        }
+
+        public void OnlineDeleteTimer(String timer){
+            Log.d("timerrrr", "= " + timer);
+
+            String json = "{\"time\":"+timer+",\"secret_key\":\""+sharedPrefManager.getSpSecretKey()+"\"}";
+            String user = "";
+
+//            mDialog.setMessage("Sedang menghapus timer berhasil. Mohon tunggu sebentar");
+//            mDialog.setIndeterminate(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                try {
+//                    mDialog.show();
+
+                    Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
+                    if (!mqttHelper.mqttAndroidClient.isConnected()){
+                        mqttHelper.mqttAndroidClient.connect();
+//                        mDialog.dismiss();
+                        Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+
+                        return;
+                    } else {
+                        MqttMessage message = new MqttMessage();
+                        message.setPayload(json.getBytes());
+                        message.setQos(0);
+                        mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/timer/delete", message,null, new IMqttActionListener() {
+                            @Override
+                            public void onSuccess(IMqttToken asyncActionToken) {
+                                Log.i("OnlineLog", "Message published= " + message.toString());
+                            }
+
+                            @Override
+                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                                Log.i("TAGGGGGGGG", "publish failed!") ;
+                            }
+                        });
+//                        mDialog.dismiss();
+                    }
+
+                } catch (MqttException e) {
+                    Log.e("TAG", e.toString());
+                    e.printStackTrace();
+                }
+
+            } else {
+                try {
+//                    mDialog.show();
+
+                    Log.d("mqttttsss", String.valueOf(mqttHelper.mqttAndroidClient.isConnected()));
+                    if (mqttHelper.mqttAndroidClient.isConnected() == false){
+                        mqttHelper.mqttAndroidClient.connect();
+//                        mDialog.dismiss();
+                        Toast.makeText(context, "Server disconnect", Toast.LENGTH_LONG).show();
+                        return;
+                    } else {
+                        MqttMessage message = new MqttMessage();
+                        message.setPayload(json.getBytes());
+                        message.setQos(0);
+                        mqttHelper.mqttAndroidClient.publish(sharedPrefManager.getSpIdDevice() + "/control/timer/delete", message,null, new IMqttActionListener() {
+                            @Override
+                            public void onSuccess(IMqttToken asyncActionToken) {
+                                Log.i("OnlineLog", "Message published= " + message.toString());
+                            }
+
+                            @Override
+                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                                Log.i("TAGGGGGGGG", "publish failed!") ;
+                            }
+                        });
+//                        mDialog.dismiss();
+                    }
+
+                } catch (MqttException e) {
+                    Log.e("TAG", e.toString());
+                    e.printStackTrace();
+                }
+            }
+
+            Toast.makeText(context, "Hapus timer berhasil", Toast.LENGTH_LONG).show();
         }
 
         public boolean isInternetConnected() {
