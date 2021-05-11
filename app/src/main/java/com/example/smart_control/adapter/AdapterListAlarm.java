@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +30,8 @@ import com.example.smart_control.ui.user.activity.DetailDevicesActivity;
 import com.example.smart_control.ui.user.feeder.HomeFeederActivity;
 import com.example.smart_control.utils.SharedPrefManager;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -114,86 +119,83 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
             img_delete_alarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (isInternetConnected()){
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mView.getRootView().getContext())
+                                .setMessage("Anda yakin mau menghapus Timer pakan ?")
+                                .setCancelable(false)
+                                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // do something...
+                                        ProgressDialog progressDialog = new ProgressDialog(mView.getRootView().getContext());
+                                        progressDialog.show();
+                                        progressDialog.setMessage("Sedang menghapus timer");
 
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(mView.getRootView().getContext())
-                            .setMessage("Anda yakin mau menghapus Timer pakan ?")
-                            .setCancelable(false)
-                            .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do something...
-                                    ProgressDialog progressDialog = new ProgressDialog(mView.getRootView().getContext());
-                                    progressDialog.show();
-                                    progressDialog.setMessage("Sedang menghapus timer");
+                                        // Online delete timer
 
-                                    Call<String> deleteAlarm = apiInterface.deleteAlarm(
-                                            time,
-                                            sharedPrefManager.getSpSecretKey()
-                                    );
+                                        db.deleteById(id);
+                                        alarmRepository.getAlarmLocal(mView.getRootView().getContext());
 
-                                    deleteAlarm.enqueue(new Callback<String>() {
-                                        @Override
-                                        public void onResponse(Call<String> call, Response<String> response) {
-                                            Log.d("deleteeee", response.body().toString());
-                                            progressDialog.dismiss();
-                                        }
+                                        progressDialog.dismiss();
+                                        Toast.makeText(context, "Timer berhasil di hapus", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
 
-                                        @Override
-                                        public void onFailure(Call<String> call, Throwable t) {
+                        alertDialog.show();
+                    } else {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mView.getRootView().getContext())
+                                .setMessage("Anda yakin mau menghapus Timer pakan ?")
+                                .setCancelable(false)
+                                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // do something...
+                                        ProgressDialog progressDialog = new ProgressDialog(mView.getRootView().getContext());
+                                        progressDialog.show();
+                                        progressDialog.setMessage("Sedang menghapus timer");
 
-                                        }
-                                    });
-                                    db.deleteById(id);
-                                    alarmRepository.getAlarmLocal(mView.getRootView().getContext());
+                                        // Offline delete timer
+                                        Call<String> deleteAlarm = apiInterface.deleteAlarm(
+                                                time,
+                                                sharedPrefManager.getSpSecretKey()
+                                        );
 
-                                    progressDialog.dismiss();
-                                    Toast.makeText(context, "Timer berhasil di hapus", Toast.LENGTH_LONG).show();
-                                }
-                            })
-                            .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
+                                        deleteAlarm.enqueue(new Callback<String>() {
+                                            @Override
+                                            public void onResponse(Call<String> call, Response<String> response) {
+                                                Log.d("deleteeee", response.body().toString());
+                                                progressDialog.dismiss();
+                                            }
 
-                    alertDialog.show();
+                                            @Override
+                                            public void onFailure(Call<String> call, Throwable t) {
 
-//                    b.setTitle("Apakah anda yakin menghapus timer pakan ?");
-//                    b.setPositiveButton("OK",
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int whichButton) {
-//                                    // do something...
-//                                    progressDialog.show();
-//                                    progressDialog.setMessage("Sedang menghapus timer");
+                                            }
+                                        });
+                                        db.deleteById(id);
+                                        alarmRepository.getAlarmLocal(mView.getRootView().getContext());
+
+                                        progressDialog.dismiss();
+                                        Toast.makeText(context, "Timer berhasil di hapus", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        alertDialog.show();
+                    }
+
 //
-//                                    Call<String> deleteAlarm = apiInterface.deleteAlarm(
-//                                            time,
-//                                            sharedPrefManager.getSpSecretKey()
-//                                    );
-//
-//                                    deleteAlarm.enqueue(new Callback<String>() {
-//                                        @Override
-//                                        public void onResponse(Call<String> call, Response<String> response) {
-//                                            progressDialog.dismiss();
-//                                        }
-//
-//                                        @Override
-//                                        public void onFailure(Call<String> call, Throwable t) {
-//
-//                                        }
-//                                    });
-//                                }
-//                            }
-//                    );
-//                    b.setNegativeButton("Cancel",
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int whichButton) {
-//                                    dialog.dismiss();
-//                                }
-//                            }
-//                    );
-//                    b.show();
                 }
             });
 
@@ -232,6 +234,33 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
 
         public void setOldTime(String old_time) {
             this.old_time = old_time;
+        }
+
+        public boolean isInternetConnected() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            Toast.makeText(AddWifiActivity.this, "version> = marshmallow", Toast.LENGTH_SHORT).show();
+                try {
+                    InetAddress address = InetAddress.getByName("www.google.com");
+                    return !address.equals("");
+                } catch (UnknownHostException e) {
+                    // Log error
+                }
+                return false;
+            } else {
+                ConnectivityManager cm =
+                        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                String SSID = "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"";
+
+                Log.d("networkkk", activeNetwork.getExtraInfo().toString() + "= " + "\"FEEDR-" + sharedPrefManager.getSpIdDevice().toString() + "\"");
+
+                if (!activeNetwork.getExtraInfo().equals(SSID)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
 
     }
