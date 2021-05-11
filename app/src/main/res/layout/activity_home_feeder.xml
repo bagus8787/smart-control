@@ -645,10 +645,10 @@
 
                         <ImageView
                             android:id="@+id/img_empty_devices"
-                            android:layout_width="110dp"
-                            android:layout_height="120dp"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/empty" />
+                            android:src="@drawable/emptyy" />
 
                         <TextView
                             android:id="@+id/txt_empty_devices"
@@ -663,7 +663,7 @@
                             android:layout_width="150dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="20dp"
                             android:background="@drawable/bg_rounded"
                             android:backgroundTint="@color/colorPrimaryDark"
                             android:text="Tambah Device"

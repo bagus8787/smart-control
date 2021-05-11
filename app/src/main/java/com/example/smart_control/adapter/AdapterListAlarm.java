@@ -254,7 +254,7 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
         public void OnlineDeleteTimer(String timer){
             Log.d("timerrrr", "= " + timer);
 
-            String json = "{\"time\":"+timer+",\"secret_key\":\""+sharedPrefManager.getSpSecretKey()+"\"}";
+            String json = "{\"time\":\""+timer+"\",\"secret_key\":\""+sharedPrefManager.getSpSecretKey()+"\"}";
             String user = "";
 
 //            mDialog.setMessage("Sedang menghapus timer berhasil. Mohon tunggu sebentar");
