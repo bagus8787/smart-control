@@ -42,6 +42,7 @@ import com.example.smart_control.network.ApiLocalClient;
 import com.example.smart_control.receiver.WifiReceiver;
 import com.example.smart_control.ui.loginFirebase.LoginFirebaseActivity;
 import com.example.smart_control.utils.SharedPrefManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.io.DataOutputStream;
@@ -84,6 +85,7 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
     SharedPrefManager sharedPrefManager;
     ApiInterface apiInterface;
     MqttHelper mqttHelper;
+    FirebaseAuth auth;
 
     WifiManager mWifiManager;
     WifiReceiver receiverWifi;
@@ -107,6 +109,8 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
         apiInterface = ApiLocalClient.getClient().create(ApiInterface.class);
         mqttHelper = new MqttHelper(this);
         progressDialog = new ProgressDialog(AddWifiActivity.this);
+        auth = FirebaseAuth.getInstance();
+        Log.d("autaaaaaah", "= " + auth.getTenantId());
 
         mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         conf = new WifiConfiguration();
@@ -459,6 +463,8 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                             Log.d("responsee", "= " + response.toString());
                             Log.d("responsee", "= " + "naannanannana");
                             Toast.makeText(AddWifiActivity.this, "Kofingurasi gagal. Coba ulangi lagi.", Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                            startActivity(new Intent(AddWifiActivity.this, HomeFeederActivity.class));
                         }
 
                         @Override
@@ -532,7 +538,19 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case R.id.btn_scan_user:
+//                progressDialog.show();
+//                progressDialog.setMessage("Sedang menyambungkan...");
+//
+//                try {
+//                    //set time in mili
+//                    Thread.sleep(15000);
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+
                 startActivity(new Intent(AddWifiActivity.this, ScanSecretKeyActivity.class));
+
                 break;
 
         }
@@ -566,18 +584,6 @@ public class AddWifiActivity extends AppCompatActivity implements View.OnClickLi
     public void onBackPressed(){
 //        finish();
         super.onBackPressed();
-    }
-
-    public boolean localConnected(){
-        Runtime runtime = Runtime.getRuntime();
-        try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 192.168.4.1");
-            int     exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-        }
-        catch (IOException e)          { e.printStackTrace(); }
-        catch (InterruptedException e) { e.printStackTrace(); }
-        return false;
     }
 
     public boolean isInternetConnected() {

@@ -58,12 +58,13 @@ public class ScanDeviceActivity extends AppCompatActivity {
         if (result != null){
             if (result.getContents() == null){
                 Toast.makeText(this, "Hasil tidak ditemukan", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this, ScanWifiActivity.class));
+//                startActivity(new Intent(this, HomeFeederActivity.class));
+                onBackPressed();
             }else{
                 String device_id = result.getContents();
 //                String device_id = "USW1000001";
 
-                String secret_key = device_id + "-" + UUID.randomUUID().toString();
+                String secret_key = device_id + "|" + UUID.randomUUID().toString();
 //                Log.d("secret_key", secret_key);
 
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, String.valueOf(device_id));
@@ -85,7 +86,8 @@ public class ScanDeviceActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        startActivity(new Intent(ScanDeviceActivity.this, LoginFirebaseActivity.class));
+        super.onBackPressed();
+//        startActivity(new Intent(ScanDeviceActivity.this, HomeFeederActivity.class));
     }
 
 }

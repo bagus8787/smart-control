@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.smart_control.R;
@@ -64,6 +65,7 @@ public class ScanWifiActivity extends AppCompatActivity {
 
     EditText edt_ssid, edt_pass;
     Button btn_konek;
+    ImageView img_back;
 //    String name;
 
     @Override
@@ -82,6 +84,14 @@ public class ScanWifiActivity extends AppCompatActivity {
         edt_pass = findViewById(R.id.edt_pass);
 
         btn_konek = findViewById(R.id.btn_konek);
+
+        img_back = findViewById(R.id.img_back);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ScanWifiActivity.this, SettingActivity.class));
+            }
+        });
 
         edt_ssid.setText("FEEDR-" + sharedPrefManager.getSpIdDevice());
 

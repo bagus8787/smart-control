@@ -98,19 +98,26 @@ public class LoginFirebaseActivity extends AppCompatActivity implements GoogleAp
 
 
                 if(firebaseAuth.getCurrentUser() != null){
-                    if(sharedPrefManager.getSpSecretKey() == ""){
-                        startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
-                        finish();
-                    } else {
-                        Log.d("emailsss", "= " + firebaseAuth.getCurrentUser().getDisplayName());
+                    Log.d("emailsss", "= " + firebaseAuth.getCurrentUser().getDisplayName());
 
-                        sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, firebaseAuth.getCurrentUser().getEmail());
-                        sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, firebaseAuth.getCurrentUser().getDisplayName());
-                        sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN,true);
-//                        firebaseAuth.getCurrentUser().getEmail();
-                        startActivity(new Intent(LoginFirebaseActivity.this, HomeFeederActivity.class));
+                    sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, firebaseAuth.getCurrentUser().getEmail());
+                    sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, firebaseAuth.getCurrentUser().getDisplayName());
+                    sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN,true);
+                    startActivity(new Intent(LoginFirebaseActivity.this, HomeFeederActivity.class));
+
+//                    if(sharedPrefManager.getSpSecretKey() == "" && !sharedPrefManager.getSPSudahLogin()){
+//                        startActivity(new Intent(LoginFirebaseActivity.this, ScanDeviceActivity.class));
 //                        finish();
-                    }
+//                    } else {
+//                        Log.d("emailsss", "= " + firebaseAuth.getCurrentUser().getDisplayName());
+//
+//                        sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, firebaseAuth.getCurrentUser().getEmail());
+//                        sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, firebaseAuth.getCurrentUser().getDisplayName());
+//                        sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN,true);
+////                        firebaseAuth.getCurrentUser().getEmail();
+//                        startActivity(new Intent(LoginFirebaseActivity.this, HomeFeederActivity.class));
+////                        finish();
+//                    }
 
                     finish();
                 }

@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -114,15 +115,16 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
-
     private static String AUTH_KEY = "key=AAAAPZwfg1o:APA91bFyoAPcGEvSiGjIlw7upmN7C0tvliqdatgybhwRND6MLlcgxVncaRNQLyrAd-7pSYDHZQoM1ofQlWceCYbCmXhTH6GIIUluNwU7n26QrJ0-47bhRUvEP0foHmr0lKGx9sU94BwQ";
 
     LinearLayout ly_timer, ly_wifi, ly_img22;
-    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan, txt_time, txt_pakan_habis;
-    Button btn_beri_pakan;
-    ImageView img_setting, img_notif, img_delete_alarm;
+    TextView mTextView, txt_nama, txt_status_device, txt_status_pakan, txt_time, txt_pakan_habis,txt_va;
+    Button btn_beri_pakan,btn_tambah_devices;
+    ImageView img_setting, img_notif, img_delete_alarm, img_scan_device;
     RecyclerView rv_time_alarm;
     SwipeRefreshLayout ly_refresh;
+    LinearLayout rv_empty_device;
+    RelativeLayout rv_filled;
 
     AdapterListAlarm adapterListAlarm;
     AlarmRepository alarmRepository;
@@ -198,6 +200,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             }
         };
 
+        rv_filled = findViewById(R.id.rv_filled);
+        rv_empty_device = findViewById(R.id.rv_empty_device);
+
         txtProgress = (TextView) findViewById(R.id.txtProgress);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -216,15 +221,20 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         txt_status_pakan = findViewById(R.id.txt_status_pakan);
         txt_time = findViewById(R.id.txt_time);
         txt_pakan_habis = findViewById(R.id.txt_pakan_habis);
+        txt_va = findViewById(R.id.txt_va);
 
         //ImageViewButton
         img_notif   = findViewById(R.id.img_notif);
         img_setting = findViewById(R.id.img_setting);
         img_delete_alarm = findViewById(R.id.img_delete_alarm);
+        img_scan_device = findViewById(R.id.img_scan_device);
+        btn_tambah_devices = findViewById(R.id.btn_tambah_devices);
 
         img_delete_alarm.setOnClickListener(this);
         img_setting.setOnClickListener(this);
         img_notif.setOnClickListener(this);
+        img_scan_device.setOnClickListener(this);
+        btn_tambah_devices.setOnClickListener(this);
 
         ly_img22.setOnClickListener(this);
         ly_wifi.setOnClickListener(this);
@@ -233,6 +243,17 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
         btn_beri_pakan.setOnClickListener(this);
 
         txt_nama.setText("Haloo ," + sharedPrefManager.getSpNama());
+
+        // kondisi jika ada atau tidak status device
+        if (sharedPrefManager.getSpIdDevice().isEmpty()){
+            rv_empty_device.setVisibility(View.VISIBLE);
+            rv_filled.setVisibility(View.INVISIBLE);
+            txt_va.setText("Belum ada Device yang kamu tambahkan. Tambah sekarang juga!");
+        } else {
+            cek_connection();
+            rv_filled.setVisibility(View.VISIBLE);
+            rv_empty_device.setVisibility(View.INVISIBLE);
+        }
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -306,8 +327,6 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-        cek_connection();
-
         Log.d("qppqpqpqpq", "= " + ConnectionStatus);
     }
 
@@ -377,6 +396,14 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                                 }
                         );
                         b.show();
+                break;
+
+            case R.id.btn_tambah_devices:
+                startActivity(new Intent(HomeFeederActivity.this, ScanDeviceActivity.class));
+                break;
+
+            case R.id.img_scan_device:
+                startActivity(new Intent(HomeFeederActivity.this, ScanSecretKeyActivity.class));
                 break;
         }
     }
@@ -569,6 +596,9 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
 
     public void OnlineFeeder(){
         Log.d("secret_keyssss", sharedPrefManager.getSpSecretKey());
+        String msg = sharedPrefManager.getSpSecretKey().substring(0,10);
+//        Log.d("msggggg", "= " + msg + " || " + sharedPrefManager.getSpSecretKey());
+
         String json = "{\"count\":"+1+",\"secret_key\":\""+sharedPrefManager.getSpSecretKey()+"\"}";
         String user = "";
 
@@ -1091,7 +1121,8 @@ public class HomeFeederActivity extends AppCompatActivity implements View.OnClic
                 .setCancelable(false)
                 .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        HomeFeederActivity.super.onBackPressed();
+//                        HomeFeederActivity.super.onBackPressed();
+                        finish();
                     }
                 })
                 .setNegativeButton("Tidak", null)

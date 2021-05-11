@@ -80,8 +80,6 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
         Log.d("alarams", alarms.toString());
         this.alarms = alarms;
 
-//        setModel Artikel ke aritkel baru
-//        artikelsArrayartikels = new ArrayList<Artikel>();
         notifyDataSetChanged();
     }
 
@@ -136,7 +134,7 @@ public class AdapterListAlarm extends RecyclerView.Adapter<AdapterListAlarm.Alar
                                     deleteAlarm.enqueue(new Callback<String>() {
                                         @Override
                                         public void onResponse(Call<String> call, Response<String> response) {
-
+                                            Log.d("deleteeee", response.body().toString());
                                             progressDialog.dismiss();
                                         }
 

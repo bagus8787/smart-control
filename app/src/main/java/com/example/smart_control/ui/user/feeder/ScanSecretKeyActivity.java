@@ -61,7 +61,9 @@ public class ScanSecretKeyActivity extends AppCompatActivity {
         if (result != null){
             if (result.getContents() == null){
                 Toast.makeText(this, "Hasil tidak ditemukan", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this, ScanWifiActivity.class));
+//                startActivity(new Intent(this, ScanWifiActivity.class));
+                onBackPressed();
+
             }else{
 //                String device_id = result.getContents();
 //                String device_id = "USW1000001";
@@ -72,12 +74,15 @@ public class ScanSecretKeyActivity extends AppCompatActivity {
                 byte[] datas = Base64.decode(secret_key, Base64.DEFAULT);
                 String text = new String(datas, StandardCharsets.UTF_8);
 
-                Log.d("secret_key_after", text);
+                String device_id = text.substring(0,10);
+                String secret_key_usr = text.substring(11);
 
+                Log.d("secret_key_after", text + " == " + device_id + "||||" + secret_key_usr);
 
-                Log.d("secret_key", sharedPrefManager.getSpIdDevice());
-
+                sharedPrefManager.saveSPString(SharedPrefManager.SP_ID_DEVICE, device_id);
                 sharedPrefManager.saveSPString(SharedPrefManager.SP_SECRET_KEY, text);
+
+                Log.d("devices_id", sharedPrefManager.getSpIdDevice() + "||||" + sharedPrefManager.getSpSecretKey());
 
                 Toast.makeText(context, text, Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, HomeFeederActivity.class)
@@ -92,8 +97,7 @@ public class ScanSecretKeyActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        startActivity(new Intent(ScanSecretKeyActivity.this, LoginFirebaseActivity.class));
-        finish();
+        super.onBackPressed();
     }
 
 }
